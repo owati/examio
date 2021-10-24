@@ -1,0 +1,15 @@
+.rows{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.why{
+    text-align: center;
+    font-family: 'Comic sans ms';
+}
+@media screen and (max-width: 600px) {
+    .rows{
+        flex-direction: column;
+    }
+}

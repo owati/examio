@@ -1,0 +1,81 @@
+.bger{
+    background: url('../assets/back1.jpg');
+    background-size: cover;
+    width: 100%;
+    height: 100vh;
+    transition: 1s ease all ;
+    
+}
+.main{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(82, 82, 91, 0.516);
+    color: cornsilk;
+}
+
+.hello{
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.greet{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.large{
+    font-size: 100px;
+    margin: 0px 20px;
+}
+
+.base{
+    width: 100%;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.base-btn{
+    margin: 30px 50px;
+    height: 80px;
+    width: 200px;
+    border: black solid 2px;
+    border-radius: 30px;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bolder;
+}
+
+
+@media screen and (max-width: 600px) {
+    .hello{
+        flex-direction: column-reverse;
+    }
+
+    .large{
+        text-align: center;
+    }
+    .base-btn{
+        margin: 0px 20px;
+        width: 150px;
+        height: 60px;
+        font-size: 25px;
+    }
+    .pol{
+        text-align: center;
+    }
+}

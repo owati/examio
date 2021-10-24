@@ -1,0 +1,52 @@
+.signup{
+    background: transparent;
+    width: 120px;
+    margin: 6px 20px;
+    border: transparent;
+    border-bottom: 2px black solid;
+    transition: 1s all ease;
+}
+
+.signup:focus{
+    outline: none;
+    width: 130px;
+}
+
+.login{
+    background: transparent;
+    width: 200px;
+    margin: 6px 40px;
+    border: transparent;
+    border-bottom: 2px black solid;
+    transition: 1s all ease;
+    text-align: center;
+
+}
+.login:focus{
+    outline: none;
+    width: 230px;
+}
+
+.log-btn {
+    margin: 20px;
+    height: 30px;
+    width: 100px;
+    border: black solid 2px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+.rotate{
+    animation: rotating 2s infinite linear;
+}
+
+@keyframes rotating {
+    from{
+        transform: rotate(0deg);
+    }
+    to{
+        transform: rotate(360deg);
+    }
+}
