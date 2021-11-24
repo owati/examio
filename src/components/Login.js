@@ -44,7 +44,7 @@ function Login(props){
                 props.log([res.name, res.token]);
                 props.loguse([res.name, res.token])
                 props.close()
-                history.push('/account')
+                history.push('/account/user')
             }
         } catch(err){
             console.log(err)

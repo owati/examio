@@ -4,7 +4,8 @@ import '../../css/dashboard.css'
 
 
 function Examcreate(props) {
-    var handleSubmit =  (event) => {
+    var handleSubmit = (event) => {
+        let data = {}
         event.preventDefault()
 
         let form_info = new FormData(event.target);
@@ -25,7 +26,7 @@ function Examcreate(props) {
         if (feed_back.error !== 'good to go') {
             props.alert(feed_back.error);
         } else {
-            //props.load()
+            props.load()
             send_data(data)
         }
 
@@ -43,7 +44,7 @@ function Examcreate(props) {
             let res = await response.json()
 
             if (res.status === 'exam created') {
-                //props.load()
+                props.load()
                 console.log('pww')
             } else {
                 console.log('pol no')
@@ -83,7 +84,6 @@ function Examcreate(props) {
 
     useEffect(() => {
         let form = document.getElementById('exam-create');
-        let data = {}
         form.addEventListener('submit', handleSubmit)
 
         return function cleanup() {
@@ -96,8 +96,9 @@ function Examcreate(props) {
     return (
         <form id="exam-create">
 
-            <div className="header-form"> <h1>Initialize the exam..</h1></div>
+
             <div className="create-form">
+                <div className="header-form"> <h1>Initialize the exam..</h1></div>
                 <div className="form-section" data-aos="fade-left">
                     <div className="form-pick">
                         <label>Indicate number of examinees </label>
@@ -248,16 +249,16 @@ function Examcreate(props) {
                     </div>
                 </div>
 
-
+                <div className="form-but"><button style={{
+                    width: '200px',
+                    height: '100%',
+                    padding: '4px'
+                }} type="submit" className="log-btn grow shadow-5"> create exam </button></div>
 
 
             </div>
 
-            <div className="form-but"><button style={{
-                width: '200px',
-                height: '100%',
-                padding: '4px'
-            }} type="submit" className="log-btn grow shadow-5"> create exam </button></div>
+
 
         </form>
     )

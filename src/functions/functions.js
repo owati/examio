@@ -1,7 +1,7 @@
 export const API_URL = 'http://127.0.0.1:8000/'
 
 export function error_create_form(data) {     // this verifies the exam creation form
-    if (data.students === undefined || (data.students && data.spec === undefined) || (data.marks === undefined) || (data.time === undefined) ||
+    if (data.students === undefined || (data.students === undefined && data.spec === undefined) || (data.marks === undefined) || (data.time === undefined) ||
         (data.questions === undefined) ||
         (data.dura === undefined) ||
         (data.veri === undefined)) {

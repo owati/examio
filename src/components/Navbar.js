@@ -17,20 +17,27 @@ function Navbar(props) {
     }
 
     useEffect(() => {
-        window.addEventListener('scroll', (e) => {
+        var handleScroll = (e) => {
             function calc(num) {
                 let length = window.visualViewport.height
                 return (num / length)
             }
-            if (window.scrollY !== 0) {
-                document.getElementsByClassName('nav')[0].style.backgroundColor = `rgba(141, 141, 141, ${calc(window.scrollY)})`;
-            } else {
-                document.getElementsByClassName('nav')[0].style.backgroundColor = 'transparent';
+            try {
+                if (window.scrollY !== 0) {
+                    document.getElementsByClassName('nav')[0].style.backgroundColor = `rgba(141, 141, 141, ${calc(window.scrollY)})`;
+                } else {
+                    document.getElementsByClassName('nav')[0].style.backgroundColor = 'transparent';
+                }
+
+            } catch (err) {
+                console.log(err)
             }
-        })
-        
+
+        }
+        window.addEventListener('scroll', handleScroll)
+
         return function cleanup() {
-            window.removeEventListener('scroll',window)
+            window.removeEventListener('scroll', handleScroll)
         }
     }, [])
     return (
@@ -52,7 +59,7 @@ function Navbar(props) {
                 <div className="tit">
                     <h3 className='logn' onClick={
                         props.user[0] == '' ? props.log : () => {
-                            history.push('/account')
+                            history.push('/account/user')
                         }
                     }> {
                             props.user[0] == '' ? 'login' : props.user[0]

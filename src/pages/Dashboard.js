@@ -3,11 +3,12 @@ import '../css/dashboard.css';
 import Main from '../components/dashboard/Main';
 import Alert from '../components/dashboard/Alert';
 import { useState } from 'react';
+import { useHistory } from 'react-router';
 import Loading from '../components/Loading';
 
-function Dash_nav(props){
+function Dashnav(props){
 
-
+    const history = useHistory()
     function openside(){
         let sideNav = document.getElementsByClassName('sideNav')[0];
         let but = document.getElementById('openside')
@@ -22,11 +23,36 @@ function Dash_nav(props){
     return(
         <div className="navig">
             <div className ="dash-tit"><span id="openside" onClick={openside}>&#9776;</span> Welcome {props.name}</div>
+            <button onClick= {() => {
+                history.push('exam_create')
+            }}>new-exam</button>
+        </div>
+    )
+}
+
+function Footer(){
+    const history = useHistory()
+    return(
+        <div className="dash-footer">
+            <div style={
+                {
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                }
+            } onClick={
+                () => {
+                    history.push('/')
+                }
+            }>
+                <h4>All rights Reserved, &copy; Examio {new Date().getFullYear()}</h4>
+
+            </div>
         </div>
     )
 }
 
 function Dashboard(props){
+
     let [alertMess, setAlert] = useState('this is an alert..')
     function openAlert(message) {
         setAlert(message)
@@ -51,13 +77,14 @@ function Dashboard(props){
 
     return(
         <div className="dash-back">
-            <Dash_nav name={props.user[0]}/>
+            <Dashnav name={props.user[0]}/>
             <div className="body">
                 <Sidenav/>
-                <Main alert={openAlert} load={shouldLoad} token={props.user[1]}/>
+                <Main which={props.match.params.which} alert={openAlert} load={shouldLoad} token={props.user[1]}/>
             </div>
             <Alert message={alertMess}/>
             <Loading load={load}/>
+            <Footer/>
         </div>
     )
 

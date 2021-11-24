@@ -30,7 +30,7 @@ function App() {
       <Router basename={process.env.PUBLIC_URL}>
         <Switch>
           <Route path="/" exact component={() => <Home log={logUser} user={user}/>}/>
-          <Route path ="/account" exact component={() => <Dashboard user={user}/>}/>
+          <Route path ="/account/:which" exact component={(props) => <Dashboard {...props} user={user} />}/>
         </Switch>
       </Router>
 
