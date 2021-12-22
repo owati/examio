@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { apiFetch } from '../functions/function';
 import Exam from '../components/Exam';
-import examio from '../assets/examio.png';
+import examio from '../assets/examio2.png';
 import profile from '../assets/profile.png';
+import Loading from "../components/Loading";
 import '../css/account.css';
 
 function Sidebar(props) {
@@ -22,19 +23,19 @@ function Sidebar(props) {
     useEffect(() => {
         for (let i of butList) {
             if (i === butt) {
-                
+
                 butCompList.push(
                     <div className='side-but-cont border-left'>
-                        <button className='side-but' style={{backgroundColor: "white"}}>{i}</button>
+                        <button className='side-but' style={{ backgroundColor: "rgb(114, 105, 105)" }}>{i}</button>
                     </div>
                 )
             } else {
                 butCompList.push(
-                    <div className={`side-but-cont ${(butList.indexOf(i) - butList.indexOf(butt)) === -1  ? '' : 'bottom-border'}`}>
+                    <div className={`side-but-cont ${(butList.indexOf(i) - butList.indexOf(butt)) === -1 ? '' : 'bottom-border'}`}>
                         <button className='side-but' onClick={() => (
-                            function(butt) {
+                            function (butt) {
                                 setButt(butt);
-                                props.url_push( butt.toLowerCase())
+                                props.url_push('/account/' + butt.toLowerCase())
                             }
                         )(i)}>{i}</button>
                     </div>
@@ -55,8 +56,8 @@ function Sidebar(props) {
                 </div>
 
                 <div className='profile-name'>
-                    <h3 style={{ margin: "3px" }}>fiyin Owati</h3>
-                    <h5 style={{ margin: "3px" }} className='leylow'>fiasdasyin@gmail.com</h5>
+                    <h3 style={{ margin: "3px" }}>{props.user.name}</h3>
+                    <h5 style={{ margin: "3px" }} className='leylow'>{props.user.email}</h5>
                 </div>
 
             </div>
@@ -73,32 +74,44 @@ function Sidebar(props) {
 function Account(props) {
     const history = useHistory()
     let [userInfo, setInfo] = useState({})
+    let [show, setShow] = useState(false)
+    var loader = false;
+
+    let load = () => {
+        loader = !loader;
+        setShow(loader);
+    }
+
+    var data = {};
+
+    function getUserInfo() {
+        if (props.user.token !== null) {
+            load();
+            apiFetch("GET", `info/${props.user.token}`, {}, data)
+                .then(() => {
+                    load()
+                    if (data.status === 200) {
+                        setInfo(data.data.info);
+                    } else {
+                        history.push("/home");
+                    }
+                })
+        } else {
+            history.push('/home');
+        }
+    }
 
     useEffect(() => {
-        let returnData = {}
-        if (props.user.name !== null) {
-            apiFetch("GET", `info/${props.user.token}`, {
-                token: props.user.token,
-                returnData
-            })
-
-            if (returnData.status === 200) {
-                setInfo(returnData.data)
-            } else {
-
-            }
-        }
-
+        getUserInfo();
     }, [])
 
 
 
-    function selectPage() {
-        let page = props.match.params.page
+    function selectPage(page) {
         switch (page) {
             case "exams":
                 return (
-                    <Exam />
+                    <Exam user={userInfo}/>
                 )
             default:
                 return <h1>404.. page not found</h1>
@@ -107,13 +120,11 @@ function Account(props) {
 
     return (
         <div className='account-main'>
-            <Sidebar url_push={history.push} />
+            <Loading show={show} />
+            <Sidebar url_push={history.push} user={userInfo}/>
             <div className='account-cont'>
-                {selectPage()}
+                {selectPage(props.match.params.page)}
             </div>
-
-
-
         </div>
     )
 }

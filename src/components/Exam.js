@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 
-function Exam() {
+function Exam(props) {
+    console.log(props)
     useEffect(() => {
         
     })
@@ -11,7 +12,7 @@ function Exam() {
                     <h2 style={{margin:"0px"}}>Manage Exams</h2>
                 </div>
                 <div className='exam-details'>
-                    <h2 style={{margin: "0px"}}>Total exams: {34}</h2>
+                    <h2 style={{margin: "0px"}}>Total exams: {props.user.exam}</h2>
 
                     <div></div>
 

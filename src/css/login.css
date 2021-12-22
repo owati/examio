@@ -4,12 +4,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: rgb(114, 105, 105);
+    color: cornsilk
 }
 
 #login-form {
     width: 300px;
     height: 300px;
     border-radius: 10px;
+    background-color: rgb(80, 75, 75);
 
 }
 
@@ -24,9 +27,9 @@
     height: 30px;
     border-radius: 5px;
     text-align: center;
-    border: rgba(0, 0, 0, 0.481) 3px solid;
+    border: cornsilk 3px solid;
     background-color: transparent;
-    color: rgba(0, 0, 0, 0.481);
+    color:cornsilk;
     font-weight: bold;
     position: fixed;
     right: 20px;
@@ -39,16 +42,35 @@
     height: 30px;
     border-radius: 5px;
     text-align: center;
-    border: rgba(0, 0, 0, 0.481) 3px solid;
+    border: cornsilk 3px solid;
     background-color: transparent;
-    color: rgba(0, 0, 0, 0.481);
+    color: cornsilk;
     font-weight: bold;
+}
+
+.log-butt:hover {
+    background-color: cornsilk;
+    color: rgb(80, 75, 75);
 }
 
 .log-header {
     margin: 20px;
-    color:rgba(0, 0, 0, 0.481)
+    color: cornsilk;
+    display: flex;
+    flex-direction: column;
 }
+
+.log-foot {
+    position: fixed;
+    width: 100vw;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    bottom: 0px;
+}
+
 
 .log-form-arrange {
     margin-top: 56px;
@@ -63,13 +85,19 @@
     margin-top: 10px;
     width: 150px;
     text-align: center;
+    background-color: transparent;
     border: transparent 2px solid;
-    border-bottom:rgba(0, 0, 0, 0.481) 2px solid;
+    border-bottom:rgb(172, 168, 151) 2px solid;
     transition: all ease 0.8s;
+    color: cornsilk;
 }
 
 .log-input:focus {
     outline: none;
     width: 160px;
+}
+
+::placeholder {
+    color: rgb(172, 168, 151);
 }
 

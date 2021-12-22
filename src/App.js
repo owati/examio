@@ -4,6 +4,7 @@ import Cookie from 'js-cookie';
 import 'tachyons';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import Loading from './components/Loading';
 import Home from './pages/Home'
 import Account  from './pages/Account';
 import Login from './pages/Login';
@@ -12,9 +13,19 @@ function App() {
   AOS.init()
 
   let [user, setUser] = useState({         // the user state
-    name: null,
-    token: null
+    name: Cookie.get("name"),
+    token: Cookie.get("token")
   })
+
+  let loader = false
+
+  let [load, setLoad] = useState(false)
+
+  function loadFunc () {
+    console.log("yeah")
+    loader = !loader
+    setLoad(loader)
+  }
 
   let login = data => {                    // logs the user and save the data as a cookie
     if(data.name !== undefined && data.token !== undefined) {
@@ -39,28 +50,15 @@ function App() {
     Cookie.remove("name");
     Cookie.remove("token");
   }
-  useEffect(() => {                          // relogs the user every time the site is opened
-    let name = Cookie.get("name");
-    let token = Cookie.get("token");
-
-    if ((name === null) || (token === null)){
-      
-    } else {
-      setUser({
-        name: name,
-        token : token
-      })
-    }
-  }, [])
-
 
   return(
     <Router basename={process.env.PUBLIC_URL}>
+      <Loading show={load}/>
       <Switch>
         <Route path='/home' exact component={(props) => <Home {...props} user={user} />}/>
         <Route path='/account/:page' exact component={ (props) => <Account user={user} 
-                                  loginFunc={login} logoutFunc={logout} {...props}/>}/>
-        <Route path='/login' exact component={() => <Login loginFunc={login}/>}/>
+                                  loginFunc={login} logoutFunc={logout} {...props} load={loadFunc}/>}/>
+        <Route path='/login' exact component={() => <Login loginFunc={login} load={loadFunc}/>}/>
       </Switch>
     </Router>
   );
