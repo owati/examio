@@ -26,7 +26,7 @@ function Sidebar(props) {
 
                 butCompList.push(
                     <div className='side-but-cont border-left'>
-                        <button className='side-but' style={{ backgroundColor: "rgb(114, 105, 105)" }}>{i}</button>
+                        <button className='side-but' style={{ backgroundColor: "rgb(46, 45, 45)" }}>{i}</button>
                     </div>
                 )
             } else {
@@ -111,7 +111,7 @@ function Account(props) {
         switch (page) {
             case "exams":
                 return (
-                    <Exam user={userInfo}/>
+                    <Exam user={userInfo} load={load} token={props.user.token}/>
                 )
             default:
                 return <h1>404.. page not found</h1>

@@ -16,6 +16,6 @@ export const apiFetch = async function (method = 'GET', endPoint = null, body = 
         destination.data = res;
         console.log(destination)
     } catch(error) {
-        
+        console.log(error)
     }
 }

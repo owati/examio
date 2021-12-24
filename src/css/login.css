@@ -4,7 +4,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgb(114, 105, 105);
+    background-color: rgb(46, 45, 45);
     color: cornsilk
 }
 
@@ -12,7 +12,7 @@
     width: 300px;
     height: 300px;
     border-radius: 10px;
-    background-color: rgb(80, 75, 75);
+    background-color: rgba(26, 28, 28, 0.905);
 
 }
 
