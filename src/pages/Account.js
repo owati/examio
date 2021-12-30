@@ -48,7 +48,7 @@ function Sidebar(props) {
     return (
         <div className="account-side">
             <div className='logo-div'>
-                <img src={examio} height="25" width="100"></img>
+                <img src={examio} height="20" width="80"></img>
             </div>
             <div className='side-profile'>
                 <div className='profile-pic'>
@@ -113,6 +113,7 @@ function Account(props) {
                 return (
                     <Exam user={userInfo} load={load} token={props.user.token}/>
                 )
+        
             default:
                 return <h1>404.. page not found</h1>
         }
@@ -120,6 +121,24 @@ function Account(props) {
 
     return (
         <div className='account-main'>
+            <div className="mobile-nav">
+            <img src={examio} height="20" width="80"></img>
+
+            <h2 style={{cursor: "pointer"}} onClick={() => {
+                document.getElementsByClassName("account-side")[0].style.width = "250px";
+
+                setTimeout(() => {
+                document.getElementsByClassName("mobile-div")[0].style.display = "block";
+                }, 650)
+            }}>&#9776;</h2>
+
+            </div>
+            <div className='mobile-div' onClick={() => {
+                document.getElementsByClassName("account-side")[0].style.width = "0px"
+                document.getElementsByClassName("mobile-div")[0].style.display = "none"
+            }}>
+
+            </div>
             <Loading show={show} />
             <Sidebar url_push={history.push} user={userInfo}/>
             <div className='account-cont'>
