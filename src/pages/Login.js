@@ -26,7 +26,6 @@ function Login(props) {
         props.load();
         apiFetch("POST", "login", data, response).then(() => {
             props.load();
-            console.log(response)
 
             if (response.status === 200) {
                 let res_data = response.data;

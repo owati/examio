@@ -36,7 +36,7 @@ function QuestionEdit(props) {
                             }
                             comp.push(<input type="number" className="create-form-input" name="correct" placeholder='the number of the correct option'></input>)
                         } else {
-                            comp = <textarea className='create-form-input' placeholder={'enter the answer here\n' + (mode === 'g' ? 'enter the answer for each gap on a new line' : '')}></textarea>
+                            comp = <textarea className='create-form-input' placeholder={'enter the answer here\n' + (mode === 'g' ? 'enter the answer for each gap on a new line' : '')} name="options"></textarea>
                         }
                         return (
                             <div>
@@ -45,9 +45,9 @@ function QuestionEdit(props) {
                                         setMode(event.target.value)
                                     }
                                 } name="mode" value={mode}>
-                                    <option style={{color : "black"}} value='o'> Obj</option>
-                                    <option  style={{color : "black"}} value='g'>German</option>
-                                    <option  style={{color : "black"}} value='t'>Theory</option>
+                                    <option style={{ color: "black" }} value='o'> Obj</option>
+                                    <option style={{ color: "black" }} value='g'>German</option>
+                                    <option style={{ color: "black" }} value='t'>Theory</option>
                                 </select>
                                 <textarea className='create-form-input' placeholder={'enter the new question' + (mode === 'g' ? '\n replace empty gaps with {dash}' : "")} name="question"></textarea>
                                 {comp}
@@ -88,94 +88,110 @@ function QuestionEdit(props) {
                     return <div></div>
                 }
             }
-            
+
 
             useEffect(() => {
-                let handleQuestionUpdate = event => {
-                    let form = event.target;
-                    let formData = new FormData(form);
+                let handleQuestionUpdate = function (event) {
+                    event.preventDefault();
+                    try {
 
-                    if(formData.get("field") === "mark") {
-                        if(formData.get("mark") === null) {
 
+                        let displayError = message => {
+                            let header = document.getElementById('edit-header' + props.num);
+                            let div = document.getElementById(`question${props.num}`)
+                            div.scrollTop = "0px"
+                            header.innerHTML = message;
+                            setTimeout(
+                                () => {
+                                    header.innerHTML = 'Edit Questions...'
+                                }, 3000
+                            )
+                        }
+                        let form = event.target;
+                        let formData = new FormData(form);
+
+                        if (formData.get("field") === "mark") {
+                            if (formData.get("mark") === null) {
+
+                            } else {
+                                props.load();
+                                let dest = {};
+                                apiFetch("PUT", `question/${props.token}/${props.id}`, {
+                                    number: props.num,
+                                    changes: {
+                                        mark: formData.get("mark")
+                                    }
+                                }, dest).then(
+                                    () => {
+                                        if (dest.status === 200) {
+                                            props.load()
+                                            props.reload()
+                                        } else {
+
+                                        }
+                                    }
+                                )
+                            }
                         } else {
-                            props.load();
-                            let dest = {};
-                            apiFetch("PUT", `questions/${props.token}/${props.id}`, {
-                                changes : {
-                                    mark : formData.get("mark")
+                            if (mode === 'o') {
+                                if ((
+                                    function () {
+                                        let check = false
+                                        for (let i = 0; i < props.option.length; i++) {
+                                            if (formData.get(`option${i + 1}`) === null) {
+                                                check = true
+                                            }
+                                        }
+                                        return formData.get("correct") === null ? true : check;
+                                    }
+                                )()) formData.append("options", '')
+
+                                else formData.append("options", [formData.get("correct"),
+                                ...(
+                                    function () {
+                                        let list = [];
+                                        for (let i = 0; i < props.option.length; i++) {
+                                            list.push(formData.get(`option${i + 1}`))
+                                        }
+                                        return list
+                                    }
+                                )()
+                                ])
+                            }
+
+                            if (formData.get("mode") !== props.mode) {
+                                console.log(typeof formData.get("question"))
+                                if (formData.get("question") === '' || formData.get("options") === null) {
+                                    displayError("Once the mode is changed, no field can be left empty");
+                                    return
                                 }
-                            },dest).then(
+                            }
+                            let dest = {};
+                            props.load();
+                            apiFetch("PUT", `question/${props.token}/${props.id}`, {
+                                number: props.num,
+                                changes: {
+                                    question: formData.get("question"),
+                                    options: formData.get("options")
+                                }
+                            }, dest).then(
                                 () => {
                                     if (dest.status === 200) {
-                                        props.load()
-                                        props.reload()
+                                        props.load();
+                                        props.reload();
                                     } else {
-                                        
+
                                     }
                                 }
                             )
-                        }
-                    } else {
-                        if (formData.get("mode") === props.mode) {
-                            if ( formData.get("quesion") === null) {
-                                if (mode === 'o' ) {
-                                    if((
-                                        function() {
-                                            let check = false
-                                            for(let i = 0,; i < props.options.length; i++) {
-                                                if (formData.get(`option${i + 1}`) === null) {
-                                                    check = true
-                                                }
-                                            }
-                                            return formData.get("correct") === null ? true : check;
-                                        }
-                                    )())  {
-                                        
-                                    } else {
-                                        props.load();
-                                        let data = {};
-                                        apiFetch("PUT", `question/${props.token}/${props.id}`, {
-                                            changes : {
-                                                question : formData.get("question"),
-                                                options :[formData.get("correct"), ...(
-                                                    function() {
-                                                        let list = []
-                                                        for(let i = 0; i < props.option.length ; i ++) {
-                                                            list.push(formData.get(`option${i + 1}`))
-                                                        }
-                                                        return list
-                                                    }
-                                                )()].join('--')
-                                            }
-                                        }, data).then(
-                                            () => {
-                                                if(data.status === 200) {
-                                                    props.load();
-                                                    props.reload();
-                                                } else {
 
-                                                }
-                                            }
-                                        )
-                                        
-                                    }
-                                }
-                            }
                         }
+                    } catch (error) {
+                        console.log(error)
                     }
                 }
-
-                try {
-                    let form = document.getElementById("question-update")
-                    form.addEventListener("submit",handleQuestionUpdate);
-
-                    return function cleanup () {
-                        form.removeEventListener("submit", handleQuestionUpdate)
-                    }
-                } catch {
-
-                }
+                let form = document.getElementById("question-update" + props.num)
+                form.addEventListener("submit", handleQuestionUpdate);
 
             }, [])
 
@@ -185,16 +201,16 @@ function QuestionEdit(props) {
                     <h3>answers</h3>
                     {setOptions(props.mode)}
 
-                    <h3>Edit Questions..</h3>
-                    <form id="question-update" style={{padding: "10px"}} >
+                    <h3 id={"edit-header" + props.num}>Edit Questions..</h3>
+                    <form id={"question-update" + props.num} style={{ padding: "10px" }} >
                         <select className='create-form-input' name="field" onChange={event => {
                             setField(event.target.value)
                         }}>
-                            <option  style={{color : "black"}}  value="mark">Mark</option>
-                            <option  style={{color : "black"}}  value="others">Others</option>
+                            <option style={{ color: "black" }} value="mark">Mark</option>
+                            <option style={{ color: "black" }} value="others">Others</option>
                         </select>
                         {getField()}
-                        <div style={{display : "flex", justifyContent : "center"}}> <button className='exam-create-but shadow-5 grow'>make changes</button></div>
+                        <div style={{ display: "flex", justifyContent: "center" }}> <button className='exam-create-but shadow-5 grow'>make changes</button></div>
                     </form>
                 </div>
             )
@@ -232,7 +248,7 @@ function QuestionEdit(props) {
                                 <h4 style={{ margin: "10px", color: "rgba(255, 248, 220, 0.474)" }}>{i.mark} mark</h4>
                             </div>
                         </button>
-                        <UpdateQuestion answer={i.answer} option={i.options} mode={i.mode} num={i.number} reload={props.relaod}/>
+                        <UpdateQuestion answer={i.answer} option={i.options} mode={i.mode} num={i.number} load={props.load} reload={props.reload} token={props.token} id={props.id} />
                     </div>
                 )
             }
@@ -301,16 +317,18 @@ function QuestionEdit(props) {
                 question: formData.get("question"),
                 option: options.join("--"),
                 mode: quest === "obj" ? 'o' : quest === "theory" ? 't' : 'g',
-                mark: mark.value === null ? 1 : mark.value
+                mark: mark.value === '' ? 1 : mark.value
             }
         } else {
             data = {
                 question: formData.get("question"),
                 option: formData.get("option"),
                 mode: quest === "obj" ? 'o' : quest === "theory" ? 't' : 'g',
-                mark: mark.value === null ? 1 : mark.value
+                mark: mark.value === '' ? 1 : mark.value
             }
         }
+
+        console.log(data)
         apiFetch("POST", `question/${props.token}/${props.id}`, data, dest)
             .then(
                 () => {
@@ -377,7 +395,7 @@ function QuestionEdit(props) {
                         document.getElementsByClassName("exam-action-page")[0].style.display = "none";
                     }
                 }>&#8630; </h2>
-                <h2 id="create-header" style={{ margin: "5px" }}>{ page === "create" ? "Set" : "View"} the exam questions..</h2>
+                <h2 id="create-header" style={{ margin: "5px" }}>{page === "create" ? "Set" : "View"} the exam questions..</h2>
             </div>
             {generatePage(page)}
 
@@ -456,7 +474,7 @@ function ExamDetail(props) {
                     <h2 style={{ margin: "0px" }}></h2>
                 </div>
                 <div className='exam-details shadow-5'>
-                    <h2 style={{ margin: "0px" }}>{examData.data.exam.exam.name} </h2>
+                    <h2 style={{ margin: "0px" }}><span></span>{examData.data.exam.exam.name} </h2>
 
                     <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
 

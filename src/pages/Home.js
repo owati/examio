@@ -1,6 +1,6 @@
-function Home(){
+function Home(props){
     return (
-        <h1>Hello world</h1>
+        <h1>Hello world == {props.user.name}</h1>
     )
 }
 
