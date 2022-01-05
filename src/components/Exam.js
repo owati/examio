@@ -1,5 +1,170 @@
 import { useState, useEffect } from 'react';
 import { apiFetch } from '../functions/function';
+import back from '../assets/backarr.png';
+
+const home_url = "examio"
+
+function ExamLogs(props) {
+    
+    return (
+        <div>
+            {}
+        </div>
+    )
+    
+}
+
+function ExamEdit(props) {
+    let [data, setData] = useState({});
+
+    function displayError(mes) {
+        try{
+            let header = document.getElementById("edit-header");
+            document.getElementById("edit-div").scrollTop = "0px";
+            header.innerHTML = mes;
+            setTimeout(
+                () => {
+                    header.innerHTML = "Edit questions.."
+                },2000
+            )
+
+        } catch {
+
+        }
+    }
+
+    function generatePage() {
+        function arrangeData(key) {
+            function regularInput(which, place, type) {
+                if (which === "num_of_students") which = "students"
+                return <input className='create-form-input' style={{ width: "150px", height: "30px" }} placeholder={place} type={type} onChange={event => {
+                    let ref = { ...data };
+                    ref[which] = event.target.value;
+                    setData(ref);
+                }}></input>
+
+            }
+
+            switch (key) {
+                case "num_of_students":
+                    return ["Number of students", regularInput(key,"Number of students", "number")];
+                case "total":
+                    return ["Total marks", regularInput(key, "Total marks", "number")];
+                case "end-time":
+                    return ["End time", <h3 style={{margin : "10px 0px", color : "rgba(255, 248, 220, 0.474)"}}>this field cannot be changed</h3>]
+                case "start":
+                    let dateChange = event => {
+                        let check = self.type === "date"
+                        let self = event.target;
+                        let other = document.getElementById(`${check ? "time-update" : "date-update"}`);
+                        let ref = { ...data };
+                        let date = new Date(check ? self.value + other.value : other.value + self.value);
+                        if (String(date) === "Invalid Date") {
+                            ref[key] = null;
+                        } else {
+                            ref[key] = date.toJSON();
+                        }
+                    }
+                    let input = <div style={{ display: "flex" }}>
+                        <input className='create-form-input' style={{ width: "150px", height: "30px" }}  type="date" id="date-update" onChange={event => { dateChange(event) }} value={new Date().toLocaleDateString()}></input>
+                        <input className='create-form-input' style={{ width: "150px", height: "30px" }}  type="time" id="time-update" onChange={event => { dateChange(event) }} value={new Date().toLocaleTimeString()}></input>
+                    </div>
+                     return ["Start time", input]
+                case "duration":
+                    return ["Exam duration", regularInput(key,"Number of students", "number")];
+
+                default:
+                    let cap_key = [...key]
+                    cap_key[0] = cap_key[0].toUpperCase();
+                    
+                    return [cap_key.join(""), regularInput(key , cap_key.join(""), "text")]
+            }
+
+           
+
+
+
+        }
+        let comp = []
+        for (let i in props.exam) {
+            if (i === "id" | i === "date_stamp" | i === "exam_code") {
+
+            } else {
+                comp.push(
+                    <div>
+                        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0px", borderBottom: "rgba(255, 248, 220, 0.474) 2px solid" }}>
+                            <div>
+                                <h3 style={{ margin: "4px 0px" }}>{arrangeData(i)[0]}</h3>
+                                <h5 style={{ margin: "0px" }}>{props.exam[i] === null ? "not specified" : ["start", "end-time"].includes(i) ? `${new Date(props.exam[i]).toLocaleDateString() + " " + new Date(props.exam[i]).toLocaleTimeString()}` :
+                                ["duration", "personal_time"].includes(i) ? `${props.exam[i][0]} hours ${props.exam[i][1]}minutes ${props.exam[i][2]} seconds` :props.exam[i]}</h5>
+                            </div>
+
+                            <button className='exam-create-but' onClick={() => {
+                                let div = document.getElementById("field-" + i)
+                                if (div.style.height === "0px") {
+                                    div.style.height = "70px"
+                                } else {
+                                    div.style.height = "0px"
+                                }
+
+                            }}>change</button>
+                        </div>
+                        <div style={{
+                            height: "0px",
+                            overflow: "hidden",
+                            transition: "0.8s ease all",
+                            display: "flex",
+                            justifyContent: "center"
+                        }} id={"field-" + i}>
+
+                            {arrangeData(i)[1]}
+                        </div>
+                    </div>
+                )
+            }
+        }
+
+        return comp
+    }
+    return (
+        <div className='exam-create-div' id="edit-div">
+            <div style={{ display: "flex", position: "sticky" }}>
+                <h2 className='back-button grow' onClick={
+                    () => {
+                        document.getElementsByClassName("exam-action-page")[0].style.display = "none";
+                    }
+                }>&#8630; </h2>
+                <h2 id="edit-header" style={{ margin: "5px" }}> Edit exam fields...</h2>
+               
+            </div>
+            <h3 style={{color : "rgba(255, 248, 220, 0.474)"}}>Exam code: {props.exam["exam code"]}</h3>
+            {generatePage()}
+            <div style={{display :"flex", justifyContent :"center", margin :"20px"}}>
+                <button className="exam-create-but grow shadow-5" onClick={() => {
+
+                    {
+                        props.load();
+                        console.log(data)
+                        let dest = {}
+                        apiFetch("PUT", `exam/${props.token}/${props.id}`,{ changes : data},dest)
+                        .then(
+                            () => {
+                                if(dest.status === 200) {
+                                    props.load();
+                                    props.reload();
+                                } else {
+                                    displayError("update not sucessfull...")
+                                }
+                            }
+                        )
+                    }
+                }}>save changes</button>
+            </div>
+
+        </div>
+    )
+
+}
 
 
 function QuestionEdit(props) {
@@ -448,8 +613,13 @@ function ExamDetail(props) {
 
     function calcPercentage(number, total) {
         try {
-            let ratio = number / total;
-            return [Math.round(ratio * 100), Math.round(ratio * 360)]
+            if (total !== null) {
+                let ratio = number / total;
+                return [Math.round(ratio * 100), Math.round(ratio * 360)]
+            } else {
+                if (number === 0) return [0, 0]
+                else return [100, 360]
+            }
         } catch {
             return [null, null]
         }
@@ -462,6 +632,54 @@ function ExamDetail(props) {
                 case "question":
                     return <QuestionEdit load={props.load} token={props.token} id={props.exam_id} reload={getData}
                         questions={examData.data.questions.questions} />
+                case "delete":
+                    return (
+                        <div style={{
+                            height: "100%",
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}>
+                            <h3 style={{ margin: "5px" }}> are you sure you want to delete </h3>
+                            <h3 style={{ margin: "5px" }}>"{examData.data.exam.exam.name}"</h3>
+                            <div style={{
+                                width: "100%",
+                                padding: "0px 10px",
+                                display: "flex",
+                                justifyContent: "center"
+                            }}>
+                                <button className='exam-create-but shadow-5 grow' onClick={() => {
+                                    let dest = {};
+                                    props.load();
+                                    apiFetch("DELETE", `exam/${props.token}/${props.exam_id}`, {}, dest)
+                                        .then(
+                                            () => {
+                                                if (dest.status === 200) {
+                                                    props.load();
+                                                    window.location.reload();
+                                                }
+                                            }
+                                        )
+                                }}>Yes</button>
+                                <button className='exam-create-but shadow-5 grow' onClick={() => {
+                                    setPage("question")
+                                }}>No</button>
+
+                            </div>
+
+                        </div>
+                    )
+                case "edit":
+                    return (
+                        <ExamEdit exam={examData.data.exam.exam} load={props.load} reload={getData} token={props.token} id={props.exam_id}/>
+                    )
+                
+                case "logs":
+                    return (
+                        <ExamLogs exam={examData.data.exam.exam}/>
+                    )
 
             }
         }
@@ -474,7 +692,14 @@ function ExamDetail(props) {
                     <h2 style={{ margin: "0px" }}></h2>
                 </div>
                 <div className='exam-details shadow-5'>
-                    <h2 style={{ margin: "0px" }}><span></span>{examData.data.exam.exam.name} </h2>
+                    <h2 style={{ margin: "0px" }}><span><img style={{
+                        margin: "0px 10px 0px 10px"
+                    }} onClick={() => {
+                        props.view({
+                            exam: false,
+                            id: null
+                        })
+                    }} src={back} height="30" width="30"></img></span>{examData.data.exam.exam.name} </h2>
 
                     <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
 
@@ -503,7 +728,14 @@ function ExamDetail(props) {
 
 
                         </div>
-                        <h4 style={{ margin: "0px" }}>complete.. Set the questions to get exam ready</h4>
+                        {
+                            calcPercentage(examData.data.questions.questions.length, examData.data.exam.exam.number)[0] === 100 ?
+                                <div>
+                                    <h4 style={{ margin: "0px" }}>Questions complete..</h4>
+                                    <h5 style={{ margin: "4px 0px" }}>exam link <a href={`https:www.${home_url}.com/#/hall/${examData.data.exam.exam["exam code"]}`}>{`https:www.${home_url}.com/#/hall/${examData.data.exam.exam["exam code"]}`}</a></h5>
+                                </div> :
+                                <h4 style={{ margin: "0px" }}>complete.... Set questions to get exam ready</h4>
+                        }
                     </div>
 
                 </div>
@@ -752,6 +984,7 @@ function CreateExam(props) {
                         props.load();
                         if (destination.status === 200) {
                             displayError("the exam has been created...");
+                            window.location.reload();
                             props.change("view")
                         } else {
                             displayError("the exam could not be created")

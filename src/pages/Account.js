@@ -8,7 +8,13 @@ import Loading from "../components/Loading";
 import '../css/account.css';
 
 function Sidebar(props) {
-    let [butt, setButt] = useState('Dashboard');
+    let [butt, setButt] = useState((
+        function(word) {
+            let str = [...word];
+            str[0] = str[0].toUpperCase();
+            return str.join("")
+        }
+    )(props.page));
     let [buttons, setButtons] = useState([]);
 
     let butList = [
@@ -140,7 +146,7 @@ function Account(props) {
 
             </div>
             <Loading show={show} />
-            <Sidebar url_push={history.push} user={userInfo}/>
+            <Sidebar url_push={history.push} user={userInfo} page={props.match.params.page}/>
             <div className='account-cont'>
                 {selectPage(props.match.params.page)}
             </div>
