@@ -55,6 +55,7 @@ function App() {
     <Router basename={process.env.PUBLIC_URL}>
       <Loading show={load}/>
       <Switch>
+        <Route path='/' exact component={(props) => <Home {...props} user={user} />}/>
         <Route path='/home' exact component={(props) => <Home {...props} user={user} />}/>
         <Route path='/account/:page' exact component={ (props) => <Account user={user} 
                                   loginFunc={login} logoutFunc={logout} {...props} load={loadFunc}/>}/>

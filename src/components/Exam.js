@@ -5,13 +5,32 @@ import back from '../assets/backarr.png';
 const home_url = "examio"
 
 function ExamLogs(props) {
-    
+    let [hall, setHall] = useState({})
+    useEffect(()=> {
+        props.load()
+        let dest = {}
+        apiFetch("GET", `hall/${props.token}/${props.exam.id}`,{},dest)
+        .then(
+            () => {
+                if (dest.status === 200) {
+                    setHall({...hall, hall : dest})
+                    props.load()
+                }
+                else {
+
+                }
+            }
+        )
+    }, [])
+    try{
     return (
         <div>
-            {}
+            {hall.hall.registered_student},..as
         </div>
     )
-    
+    } catch {
+        return <h1>loading...</h1>
+    }
 }
 
 function ExamEdit(props) {
@@ -678,7 +697,7 @@ function ExamDetail(props) {
                 
                 case "logs":
                     return (
-                        <ExamLogs exam={examData.data.exam.exam}/>
+                        <ExamLogs exam={examData.data.exam.exam} token={props.token} load={props.load}/>
                     )
 
             }
