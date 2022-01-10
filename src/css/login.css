@@ -16,6 +16,14 @@
 
 }
 
+#signup-form {
+    width: 300px;
+    height: 300px;
+    border-radius: 10px;
+    background-color: rgba(26, 28, 28, 0.905);
+
+}
+
 .logo {
     position: fixed;
     top: 20px;
@@ -101,3 +109,10 @@
     color: rgb(172, 168, 151);
 }
 
+
+@media  screen and (max-height: 399px) {
+    .logo, .log-but, .log-foot {
+        display: none;
+    }
+    
+}

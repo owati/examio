@@ -53,7 +53,7 @@ function Login(props) {
     return (
         <div className="center-div">
             <div className="logo"><img src={examio} height="20" width="90"></img></div>
-            <button className="log-but grow">sign up</button>
+            <button className="log-but grow" onClick={() => {history.push("/signup")}}>sign up</button>
             <form id="login-form" className="shadow-5">
                 <div className="log-header">
                     <h2 style={{ margin: "0px" }} id="log-head">Sign in..</h2>
