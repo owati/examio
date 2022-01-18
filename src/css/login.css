@@ -89,9 +89,16 @@
     align-items: center;
 }
 
+.sign-arrange {
+    height : calc(100% - 68px);
+    margin : 0px;
+    justify-content: flex-start;
+    overflow-y: scroll;
+}
+
 .log-input {
     margin-top: 10px;
-    width: 150px;
+    width: 200px;
     text-align: center;
     background-color: transparent;
     border: transparent 2px solid;
@@ -100,9 +107,17 @@
     color: cornsilk;
 }
 
+.sign-input {
+    margin-top: 20px;
+}
+
+.sign-butt {
+    margin-bottom : 20px 
+}
+
 .log-input:focus {
     outline: none;
-    width: 160px;
+    width: 220px;
 }
 
 ::placeholder {
@@ -114,5 +129,4 @@
     .logo, .log-but, .log-foot {
         display: none;
     }
-    
 }

@@ -206,6 +206,8 @@
     width: 100%;
     height: fit-content;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 input[type="checkbox"] {
@@ -215,12 +217,13 @@ input[type="checkbox"] {
     margin-right: 10px;
 }
 
-#exam-create-form {
+#exam-create-form, #exam-register-div {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: fit-content;
 }
+
 
 .create-form-input {
     background-color: transparent;
@@ -263,6 +266,20 @@ input[type="checkbox"] {
     align-items: center;
 }
 
+.log-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.small-marg {
+    margin : 5px;
+    text-align: center;
+}
+
 
 @media screen and (max-width : 855px) {
     .exam-action {
@@ -286,7 +303,7 @@ input[type="checkbox"] {
         font-size: 50px;
         margin: 0px;
         margin-right: 10px;
-        margin-top: 8px;
+        margin-top: -7px;
         cursor: pointer;
     }
 }
@@ -316,7 +333,7 @@ input[type="checkbox"] {
         font-size: 50px;
         margin: 0px;
         margin-right: 10px;
-        margin-top: 8px;
+        margin-top: -7px;
         cursor: pointer;
     }
 

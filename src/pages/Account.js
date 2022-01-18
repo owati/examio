@@ -5,11 +5,13 @@ import Exam from '../components/Exam';
 import examio from '../assets/examio2.png';
 import profile from '../assets/profile.png';
 import Loading from "../components/Loading";
+import Examinne from "../components/Examinee";
 import '../css/account.css';
+import Examinee from '../components/Examinee';
 
 function Sidebar(props) {
     let [butt, setButt] = useState((
-        function(word) {
+        function (word) {
             let str = [...word];
             str[0] = str[0].toUpperCase();
             return str.join("")
@@ -31,7 +33,12 @@ function Sidebar(props) {
             if (i === butt) {
 
                 butCompList.push(
-                    <div className='side-but-cont border-left'>
+                    <div className='side-but-cont border-left' onClick={() => {
+                        if (window.innerWidth < 620) {
+                            document.getElementsByClassName("account-side")[0].style.width = "0px";
+                            document.getElementsByClassName("mobile-div")[0].style.display = "none";
+                        }
+                    }}>
                         <button className='side-but' style={{ backgroundColor: "rgb(46, 45, 45)" }}>{i}</button>
                     </div>
                 )
@@ -42,6 +49,11 @@ function Sidebar(props) {
                             function (butt) {
                                 setButt(butt);
                                 props.url_push('/account/' + butt.toLowerCase())
+
+                                if (window.innerWidth < 620) {
+                                    document.getElementsByClassName("account-side")[0].style.width = "0px";
+                                    document.getElementsByClassName("mobile-div")[0].style.display = "none";
+                                }
                             }
                         )(i)}>{i}</button>
                     </div>
@@ -114,39 +126,55 @@ function Account(props) {
 
 
     function selectPage(page) {
-        switch (page) {
-            case "exams":
-                return (
-                    <Exam user={userInfo} load={load} token={props.user.token}/>
-                )
-        
-            default:
-                return <h1>404.. page not found</h1>
+        try {
+
+
+            switch (page) {
+                case "exams":
+                    if (!userInfo.role) {
+                        return (
+                            <Examinee user={userInfo} load={load} token={props.user.token} />
+                        )
+                    } else {
+                        return (
+                            <Exam user={userInfo} load={load} token={props.user.token} />
+                        )
+                    }
+
+                default:
+                    return <h1>404.. page not found</h1>
+            }
+        } catch {
+            return (
+                <div>
+                    loading....
+                </div>
+            )
         }
     }
 
     return (
         <div className='account-main'>
             <div className="mobile-nav">
-            <img src={examio} height="20" width="80"></img>
+                <img src={examio} height="20" width="80"></img>
 
-            <h2 style={{cursor: "pointer"}} onClick={() => {
-                document.getElementsByClassName("account-side")[0].style.width = "250px";
+                <h2 style={{ cursor: "pointer" }} onClick={() => {
+                    document.getElementsByClassName("account-side")[0].style.width = "250px";
 
-                setTimeout(() => {
-                document.getElementsByClassName("mobile-div")[0].style.display = "block";
-                }, 650)
-            }}>&#9776;</h2>
+                    setTimeout(() => {
+                        document.getElementsByClassName("mobile-div")[0].style.display = "block";
+                    }, 650)
+                }}>&#9776;</h2>
 
             </div>
             <div className='mobile-div' onClick={() => {
-                document.getElementsByClassName("account-side")[0].style.width = "0px"
-                document.getElementsByClassName("mobile-div")[0].style.display = "none"
+                document.getElementsByClassName("account-side")[0].style.width = "0px";
+                document.getElementsByClassName("mobile-div")[0].style.display = "none";
             }}>
 
             </div>
             <Loading show={show} />
-            <Sidebar url_push={history.push} user={userInfo} page={props.match.params.page}/>
+            <Sidebar url_push={history.push} user={userInfo} page={props.match.params.page} />
             <div className='account-cont'>
                 {selectPage(props.match.params.page)}
             </div>

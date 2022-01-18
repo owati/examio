@@ -1,35 +1,92 @@
 import { useState, useEffect } from 'react';
-import { apiFetch } from '../functions/function';
+import { apiFetch, API_URL, CountDownTimer } from '../functions/function';
 import back from '../assets/backarr.png';
 
 const home_url = "examio"
 
 function ExamLogs(props) {
     let [hall, setHall] = useState({})
-    useEffect(()=> {
-        props.load()
-        let dest = {}
-        apiFetch("GET", `hall/${props.token}/${props.exam.id}`,{},dest)
-        .then(
-            () => {
-                if (dest.status === 200) {
-                    setHall({...hall, hall : dest})
-                    props.load()
-                }
-                else {
 
+    function generateLogs(status) {
+        switch (status) {
+            case "created":
+                if (props.exam.start === null) {
+                    return [
+                        <h2>the exam is yet to start nad has no start time..</h2>,
+                        <button className='exam-create-but'>Start exam</button>
+                    ]
+                } else {
+                    let time = new Date(props.exam.start)
+                    return [
+                        <h2 className='small-marg'>Start time: </h2>,
+                        <h3 className='small-marg'>{time.toLocaleDateString()} {time.toLocaleTimeString()} </h3>,
+                        <h3 className='small-marg' style={{marginTop : "30px"}}> exam will begin in..</h3>,
+                        <CountDownTimer start={props.exam.start}>
+
+                        </CountDownTimer>
+                    ]
                 }
+            case "end":
+                return [
+                    <h1 className='small-marg'>exam has ended..</h1>
+
+                ]
+
+            default:
+                return <h1>Oops</h1>
+        }
+    }
+    useEffect(() => {
+        // let endpoint = API_URL.replace("http", "ws") + `logs/${props.token}/${props.exam.id}`
+        // let socket = new WebSocket(endpoint)
+
+        // socket.onopen = e => {
+        //     console.log("open", e)
+        // }
+        // socket.onmessage = e => {
+        //     console.log("message", e)
+        // }
+
+        // socket.onerror = e => {
+        //     console.log("error", e)
+        // }
+
+        // socket.onclose = e => {
+        //     console.log("close", e)
+        // }
+
+        // return function cleanup() {
+        //     socket.close()
+        // }
+        if (props.exam.status === "created") {
+            if (props.exam.start === null) {
+
             }
-        )
+        }
     }, [])
-    try{
-    return (
-        <div>
-            {hall.hall.registered_student},..as
-        </div>
-    )
+    try {
+        return (
+            <div className='exam-create-div' style={{ height: "100%", overflow: "hidden" }}>
+                <div style={{ display: "flex", position: "sticky" }}>
+                    <h2 className='back-button grow' onClick={
+                        () => {
+                            document.getElementsByClassName("exam-action-page")[0].style.display = "none";
+                        }
+                    }>&#8630; </h2>
+                     <h2 className='small-marg' style={{ textAlign: "left" }}>Exam logs.</h2>
+                </div>
+               
+                <div className='log-div'>
+                    {generateLogs(props.exam.status)}
+                </div>
+            </div>
+        )
     } catch {
-        return <h1>loading...</h1>
+        return (
+            <div className='log-div'>
+                <h3 style={{ textAlign: "center", color: "rgba(242, 242, 242, 0.529)" }}>loading...</h3>
+            </div>
+        )
     }
 }
 
@@ -37,14 +94,14 @@ function ExamEdit(props) {
     let [data, setData] = useState({});
 
     function displayError(mes) {
-        try{
+        try {
             let header = document.getElementById("edit-header");
             document.getElementById("edit-div").scrollTop = "0px";
             header.innerHTML = mes;
             setTimeout(
                 () => {
                     header.innerHTML = "Edit questions.."
-                },2000
+                }, 2000
             )
 
         } catch {
@@ -66,11 +123,11 @@ function ExamEdit(props) {
 
             switch (key) {
                 case "num_of_students":
-                    return ["Number of students", regularInput(key,"Number of students", "number")];
+                    return ["Number of students", regularInput(key, "Number of students", "number")];
                 case "total":
                     return ["Total marks", regularInput(key, "Total marks", "number")];
                 case "end-time":
-                    return ["End time", <h3 style={{margin : "10px 0px", color : "rgba(255, 248, 220, 0.474)"}}>this field cannot be changed</h3>]
+                    return ["End time", <h3 style={{ margin: "10px 0px", color: "rgba(255, 248, 220, 0.474)" }}>this field cannot be changed</h3>]
                 case "start":
                     let dateChange = event => {
                         let check = self.type === "date"
@@ -85,21 +142,21 @@ function ExamEdit(props) {
                         }
                     }
                     let input = <div style={{ display: "flex" }}>
-                        <input className='create-form-input' style={{ width: "150px", height: "30px" }}  type="date" id="date-update" onChange={event => { dateChange(event) }} value={new Date().toLocaleDateString()}></input>
-                        <input className='create-form-input' style={{ width: "150px", height: "30px" }}  type="time" id="time-update" onChange={event => { dateChange(event) }} value={new Date().toLocaleTimeString()}></input>
+                        <input className='create-form-input' style={{ width: "150px", height: "30px" }} type="date" id="date-update" onChange={event => { dateChange(event) }} value={new Date().toLocaleDateString()}></input>
+                        <input className='create-form-input' style={{ width: "150px", height: "30px" }} type="time" id="time-update" onChange={event => { dateChange(event) }} value={new Date().toLocaleTimeString()}></input>
                     </div>
-                     return ["Start time", input]
+                    return ["Start time", input]
                 case "duration":
-                    return ["Exam duration", regularInput(key,"Number of students", "number")];
+                    return ["Exam duration", regularInput(key, "Number of students", "number")];
 
                 default:
                     let cap_key = [...key]
                     cap_key[0] = cap_key[0].toUpperCase();
-                    
-                    return [cap_key.join(""), regularInput(key , cap_key.join(""), "text")]
+
+                    return [cap_key.join(""), regularInput(key, cap_key.join(""), "text")]
             }
 
-           
+
 
 
 
@@ -115,7 +172,7 @@ function ExamEdit(props) {
                             <div>
                                 <h3 style={{ margin: "4px 0px" }}>{arrangeData(i)[0]}</h3>
                                 <h5 style={{ margin: "0px" }}>{props.exam[i] === null ? "not specified" : ["start", "end-time"].includes(i) ? `${new Date(props.exam[i]).toLocaleDateString() + " " + new Date(props.exam[i]).toLocaleTimeString()}` :
-                                ["duration", "personal_time"].includes(i) ? `${props.exam[i][0]} hours ${props.exam[i][1]}minutes ${props.exam[i][2]} seconds` :props.exam[i]}</h5>
+                                    ["duration", "personal_time"].includes(i) ? `${props.exam[i][0]} hours ${props.exam[i][1]}minutes ${props.exam[i][2]} seconds` : props.exam[i]}</h5>
                             </div>
 
                             <button className='exam-create-but' onClick={() => {
@@ -154,28 +211,28 @@ function ExamEdit(props) {
                     }
                 }>&#8630; </h2>
                 <h2 id="edit-header" style={{ margin: "5px" }}> Edit exam fields...</h2>
-               
+
             </div>
-            <h3 style={{color : "rgba(255, 248, 220, 0.474)"}}>Exam code: {props.exam["exam code"]}</h3>
+            <h3 style={{ color: "rgba(255, 248, 220, 0.474)" }}>Exam code: {props.exam["exam code"]}</h3>
             {generatePage()}
-            <div style={{display :"flex", justifyContent :"center", margin :"20px"}}>
+            <div style={{ display: "flex", justifyContent: "center", margin: "20px" }}>
                 <button className="exam-create-but grow shadow-5" onClick={() => {
 
                     {
                         props.load();
                         console.log(data)
                         let dest = {}
-                        apiFetch("PUT", `exam/${props.token}/${props.id}`,{ changes : data},dest)
-                        .then(
-                            () => {
-                                if(dest.status === 200) {
-                                    props.load();
-                                    props.reload();
-                                } else {
-                                    displayError("update not sucessfull...")
+                        apiFetch("PUT", `exam/${props.token}/${props.id}`, { changes: data }, dest)
+                            .then(
+                                () => {
+                                    if (dest.status === 200) {
+                                        props.load();
+                                        props.reload();
+                                    } else {
+                                        displayError("update not sucessfull...")
+                                    }
                                 }
-                            }
-                        )
+                            )
                     }
                 }}>save changes</button>
             </div>
@@ -692,12 +749,12 @@ function ExamDetail(props) {
                     )
                 case "edit":
                     return (
-                        <ExamEdit exam={examData.data.exam.exam} load={props.load} reload={getData} token={props.token} id={props.exam_id}/>
+                        <ExamEdit exam={examData.data.exam.exam} load={props.load} reload={getData} token={props.token} id={props.exam_id} />
                     )
-                
+
                 case "logs":
                     return (
-                        <ExamLogs exam={examData.data.exam.exam} token={props.token} load={props.load}/>
+                        <ExamLogs exam={examData.data.exam.exam} token={props.token} load={props.load} />
                     )
 
             }
@@ -1024,7 +1081,7 @@ function CreateExam(props) {
     return (
         <div className='exam-create-div'>
             <div style={{ display: "flex", position: "sticky" }}>
-                <h2 className='back-button grow' onClick={
+                <h2 className='back-button grow' style={{marginTop : "8px"}}  onClick={
                     () => {
                         document.getElementsByClassName("exam-action-page")[0].style.display = "none";
                     }
