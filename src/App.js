@@ -9,6 +9,7 @@ import Home from './pages/Home'
 import Account  from './pages/Account';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Hall from './pages/Hall'
 
 function App() {
   AOS.init()
@@ -61,7 +62,8 @@ function App() {
         <Route path='/account/:page' exact component={ (props) => <Account user={user} 
                                   loginFunc={login} logoutFunc={logout} {...props} load={loadFunc}/>}/>
         <Route path='/login' exact component={() => <Login loginFunc={login} load={loadFunc}/>}/>
-        <Route path='/signup' exacy component={() => <Signup load={loadFunc}/>}/>
+        <Route path='/signup' exact component={() => <Signup load={loadFunc}/>}/>
+        <Route path='/hall/:token' exact component={(props) => <Hall {...props} />}/>
       </Switch>
     </Router>
   );

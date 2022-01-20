@@ -1,23 +1,73 @@
 import { useState, useEffect } from "react";
-import { apiFetch } from "../functions/function";
+import { useHistory } from "react-router-dom";
+import { apiFetch, CountDownTimer } from "../functions/function";
 
 function ViewPage(props) {
+    const history = useHistory();
     let [sorted, setSort] = useState([[], []]);
     let [page, setPage] = useState("all");
 
+    let joinHall = exam => {history.push("/hall/" + exam.exam["exam code"])}
+
     function buttonFunc(id) {
-        function getExam(id) {
-            return props.exams.filter(
-                x => x.id === id
-            )[0]
-        }
-        let exam = getExam(id)
-        try{
+        try {
             let div = document.getElementById("exam-details-" + id)
-            if(div.style.height === "0px") div.style.height === "150px";
-            else div.style.height === "0px";
+            if (div.style.height === "0px") div.style.height = "150px";
+            else div.style.height = "0px";
         } catch {
-            
+
+        }
+    }
+
+    let displayExtended = exam => {
+        switch (exam.status) {
+            case "registered":
+                if (exam.exam.status === "created") {
+                    if (exam.exam.start === null) {
+                        return (
+                            <div>
+                                <h2>This exam has no time, specified by the examinerr</h2>
+                                <button className="exam-create-but" onClick={() => joinHall(exam)}>Join Exam</button>
+                            </div>
+                        )
+                    } else {
+                        return (
+                            <div>
+                                <h2>time till exam ..</h2>
+                                <CountDownTimer start={exam.exam.start}>
+                                    <button className="exam-create-but" onClick={() => joinHall(exam)}>Join Exam</button>
+                                </CountDownTimer>
+                            </div>
+                        )
+                    }
+                } else if (exam.exam.status === "starting") {
+                    return (
+                        <div>
+                            <h2>The exam will soon be starting..</h2>
+                            <button className="exam-create-but" onClick={() => joinHall(exam)}>Join Exam</button>
+                        </div>
+                    )
+                } else if (exam.exam.status === "during") {
+                    return (
+                        <div>
+                            <h2>The exam is currently ongoing..</h2>
+                            <button className="exam-create-but">Join Exam</button>
+                        </div>
+                    )
+                } else {
+                    return (
+                        <div>
+                            <h2>The exam has already been concluded..</h2>
+                        </div>
+                    )
+                }
+            default:
+                return (
+                    <div>
+                        <h3>Exam completed</h3>
+                        <button className="exam-create-but">View result</button>
+                    </div>
+                )
         }
     }
 
@@ -27,38 +77,56 @@ function ViewPage(props) {
             switch (page) {
                 case "all":
                     for (let i of props.exams) {
-                        content.push(<button className='exam-list-button grow shadow-5' onClick={() => { buttonFunc(i.id) }}>
-                            <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
-                                <h4 style={{ margin: "0px" }}>{i.exam.name}</h4> <h4 style={{ margin: "0px" }}>{new Date(i.date_stamp).toLocaleDateString()}</h4>
-                            </div>
-                            <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
-                                <h4 style={{ margin: "10px", color: "rgba(255, 248, 220, 0.474)" }}>Status : {i.status}</h4>
-                            </div>
-                        </button>)
+                        content.push(
+                            <div>
+                                <button className='exam-list-button grow shadow-5' onClick={() => { buttonFunc(i.id) }}>
+                                    <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+                                        <h4 style={{ margin: "0px" }}>{i.exam.name}</h4> <h4 style={{ margin: "0px" }}>{new Date(i.date_stamp).toLocaleDateString()}</h4>
+                                    </div>
+                                    <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
+                                        <h4 style={{ margin: "10px", color: "rgba(255, 248, 220, 0.474)" }}>Status : {i.status}</h4>
+                                    </div>
+                                </button>
+                                <div style={{ height: "0px", overflowY: "hidden", transition: "0.8s all ease" }} id={`exam-details-${i.id}`}>
+                                    {displayExtended(i)}
+                                </div>
+                            </div>)
                     }
                     break;
                 case "start":
                     for (let i of sorted[0]) {
-                        content.push(<button className='exam-list-button grow shadow-5' onClick={() => { buttonFunc(i.id) }}>
-                            <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
-                                <h4 style={{ margin: "0px" }}>{i.exam.name}</h4> <h4 style={{ margin: "0px" }}>{new Date(i.date_stamp).toLocaleDateString()}</h4>
-                            </div>
-                            <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
-                                <h4 style={{ margin: "10px", color: "rgba(255, 248, 220, 0.474)" }}>Status : {i.status}</h4>
-                            </div>
-                        </button>)
+                        content.push(
+                            <div>
+                                <button className='exam-list-button grow shadow-5' onClick={() => { buttonFunc(i.id) }}>
+                                    <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+                                        <h4 style={{ margin: "0px" }}>{i.exam.name}</h4> <h4 style={{ margin: "0px" }}>{new Date(i.date_stamp).toLocaleDateString()}</h4>
+                                    </div>
+                                    <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
+                                        <h4 style={{ margin: "10px", color: "rgba(255, 248, 220, 0.474)" }}>Status : {i.status}</h4>
+                                    </div>
+                                </button>
+                                <div style={{ height: "0px", overflowY: "hidden", transition: "0.8s all ease" }} id={`exam-details-${i.id}`}>
+                                    {displayExtended(i)}
+                                </div>
+                            </div>)
                     }
                     break;
                 case "com":
                     for (let i of sorted[1]) {
-                        content.push(<button className='exam-list-button grow shadow-5' onClick={() => { buttonFunc(i.id) }}>
-                            <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
-                                <h4 style={{ margin: "0px" }}>{i.exam.name}</h4> <h4 style={{ margin: "0px" }}>{new Date(i.date_stamp).toLocaleDateString()}</h4>
-                            </div>
-                            <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
-                                <h4 style={{ margin: "10px", color: "rgba(255, 248, 220, 0.474)" }}>Status : {i.status}</h4>
-                            </div>
-                        </button>)
+                        content.push(
+                            <div>
+                                <button className='exam-list-button grow shadow-5' onClick={() => { buttonFunc(i.id) }}>
+                                    <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+                                        <h4 style={{ margin: "0px" }}>{i.exam.name}</h4> <h4 style={{ margin: "0px" }}>{new Date(i.date_stamp).toLocaleDateString()}</h4>
+                                    </div>
+                                    <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
+                                        <h4 style={{ margin: "10px", color: "rgba(255, 248, 220, 0.474)" }}>Status : {i.status}</h4>
+                                    </div>
+                                </button>
+                                <div style={{ height: "0px", overflowY: "hidden", transition: "0.8s all ease" }} id={`exam-details-${i.id}`}>
+                                    {displayExtended(i)}
+                                </div>
+                            </div>)
                     }
                     break;
                 default:
@@ -77,46 +145,55 @@ function ViewPage(props) {
                 </div>
             )
         }
-        catch(error){
+        catch (error) {
             return <div>loading</div>
         }
     }
 
     useEffect(() => {
-        try{
+        try {
 
-        if (!props.loading) {
-            let start = [], complete = [];
+            if (!props.loading) {
+                let start = [], complete = [];
 
-            for (let i of props.exams) {
-                if (i.status === "registered") start.push(i);
-                else complete.push(i);
+                for (let i of props.exams) {
+                    if (i.status === "registered") start.push(i);
+                    else complete.push(i);
+                }
+                setSort([start, complete]);
             }
-            setSort([start, complete]);
-        }
-    } catch {
+        } catch {
 
-    }
+        }
 
     }, [props])
-    try{
-    return (
-        <div className='exam-view'>
-            <div className='exam-view-actions'>
-                <div className={'exam-view-group grow' + (page === "all" ? ' bottom-border' : '')} onClick={() => { setPage("all") }}>
-                    <h4 style={{ display: "flex" }}>all <div className='exam-num'>{props.exams.length}</div></h4>
+    try {
+        return (
+            <div className='exam-view'>
+                <div style={{ display: "flex", position: "sticky" }} className="pad-10">
+                    <h2 className='back-button grow' style={{ marginTop: "8px" }} onClick={
+                        () => {
+                            document.getElementsByClassName("exam-action-page")[0].style.display = "none";
+                        }
+                    }>&#8630; </h2>
+                    <h2 id="create-header">View Exams...</h2>
                 </div>
-                <div className={'exam-view-group grow' + (page === "start" ? ' bottom-border' : '')} onClick={() => { setPage("start") }}>
-                    <h4 style={{ display: "flex" }}>pending <div className='exam-num'>{sorted[0].length}</div></h4>
-                </div>
-                <div className={'exam-view-group grow' + (page === "com" ? ' bottom-border' : '')} onClick={() => { setPage("com") }}>
-                    <h4 style={{ display: "flex" }}>completed <div className='exam-num'>{sorted[1].length}</div></h4>
-                </div>
+                <div className='exam-view-actions'>
+                    <div className={'exam-view-group grow' + (page === "all" ? ' bottom-border' : '')} onClick={() => { setPage("all") }}>
+                        <h4 style={{ display: "flex" }}>all <div className='exam-num'>{props.exams.length}</div></h4>
+                    </div>
+                    <div className={'exam-view-group grow' + (page === "start" ? ' bottom-border' : '')} onClick={() => { setPage("start") }}>
+                        <h4 style={{ display: "flex" }}>pending <div className='exam-num'>{sorted[0].length}</div></h4>
+                    </div>
+                    <div className={'exam-view-group grow' + (page === "com" ? ' bottom-border' : '')} onClick={() => { setPage("com") }}>
+                        <h4 style={{ display: "flex" }}>completed <div className='exam-num'>{sorted[1].length}</div></h4>
+                    </div>
 
+                </div>
+                {generateExamList(page)}
             </div>
-            {generateExamList(page)}
-        </div>
-    ) }
+        )
+    }
     catch {
         return <div>Loading...</div>
     }
@@ -301,7 +378,7 @@ function Examinee(props) {
             </div>
 
         </div>
-    ) 
+    )
 
 
 }

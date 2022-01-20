@@ -75,8 +75,6 @@
 }
 
 
-
-
 .bottom-border{
     border-bottom: rgb(148, 139, 139) 2px solid;
 }
@@ -132,6 +130,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    
 }
 
 .exam-view-actions {
@@ -139,6 +138,10 @@
     height: 80px;
     display: flex;
     justify-content: space-around;
+}
+
+.pad-10 {
+    padding:  0px 10px;
 }
 
 

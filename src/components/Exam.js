@@ -267,7 +267,6 @@ function QuestionEdit(props) {
             function getField() {
                 switch (field) {
                     case "others":
-                        console.log(mode)
                         let comp = []
                         if (mode === 'o') {
                             for (let i = 0; i < props.option.length; i++) {
@@ -501,7 +500,7 @@ function QuestionEdit(props) {
                 return (
                     <div>
                         <div className='question-div'>
-                            <select className='create-form-input' style={{ width: "fit-content" }} onChange={event => {
+                            <select className='create-form-input' value={quest} style={{ width: "fit-content" }} onChange={event => {
                                 setQuest(event.target.value)
                             }}>
                                 <option value="obj" style={{ color: "black" }}>Obj</option>

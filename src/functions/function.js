@@ -24,9 +24,11 @@ export const apiFetch = async function (method = 'GET', endPoint = null, body = 
 
 export var CountDownTimer = props => {
 
+    let [show, setShow] = useState(false);
+
     function beautify(num) {
         if (num < 10) {
-            return  '0' + 9;
+            return  '0' + num;
         } else {
             return num
         }
@@ -48,16 +50,19 @@ export var CountDownTimer = props => {
                         duration = Math.floor(duration / 1000)
                         timer = setInterval(() => {
                             if (duration < 1) {
-                                clearInterval(timer)
+                                clearInterval(timer);
+                                setShow(true)
                             }
                             let days = Math.floor(duration / (3600 * 24))
                             let hours = Math.floor((duration % (3600 * 24)) / 3600)
                             let minutes = Math.floor((duration % 3600) / 60)
                             let secs = duration % 60
 
-
-                            document.getElementById("timer").innerHTML = `${days} days ${beautify(hours)}:${beautify(minutes)}:${beautify(secs)}`
-
+                            try{
+                                document.getElementById("timer").innerHTML = `${days} days ${beautify(hours)}:${beautify(minutes)}:${beautify(secs)}`
+                            } catch {
+                                
+                            }
                             duration -= 1
                         }, 1000);
                     }
@@ -73,7 +78,13 @@ export var CountDownTimer = props => {
             }
         },[]
     )
-    return (
+    return !show ? (
         <h2 id="timer" className="small-marg">00:00:00</h2>
+    ) : props.children === undefined ? (
+        <h2>00:00:00</h2>
+    ) : (
+        <div>
+         {props.children}
+        </div>
     )
 }
