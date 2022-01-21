@@ -1,6 +1,6 @@
 import { useState ,useEffect } from "react";
 
-export const API_URL = "http://127.0.0.1:8000/" //"http://examio.herokuapp.com/" 
+export const API_URL = "http://examio.herokuapp.com/"  //"http://127.0.0.1:8000/" 
 
 export const apiFetch = async function (method = 'GET', endPoint = null, body = {}, destination) {
 
@@ -61,7 +61,7 @@ export var CountDownTimer = props => {
                             try{
                                 document.getElementById("timer").innerHTML = `${days} days ${beautify(hours)}:${beautify(minutes)}:${beautify(secs)}`
                             } catch {
-                                
+
                             }
                             duration -= 1
                         }, 1000);
