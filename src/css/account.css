@@ -283,6 +283,17 @@ input[type="checkbox"] {
     text-align: center;
 }
 
+.centralize {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.danger {
+    border: 3px solid red !important;
+    color: red;
+}
+
 
 @media screen and (max-width : 855px) {
     .exam-action {

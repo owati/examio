@@ -6,6 +6,13 @@ import examio from "../assets/examio2.png";
 
 function Login(props) {
     const history = useHistory()
+    let whether;
+    try{
+        whether = props.match.params.type
+    } catch {
+        whether = null
+    }
+
 
     function handleRequestError(err) {
         let head = document.getElementById("log-head");
@@ -16,6 +23,7 @@ function Login(props) {
 
     }
     function handleLoginSubmit(e) {
+        console.log(whether)
         var response = {};
         e.preventDefault();
         let formData = new FormData(e.target)
@@ -31,6 +39,7 @@ function Login(props) {
                 let res_data = response.data;
                 if (res_data.login) {
                     props.loginFunc(res_data);
+                    if(whether === "oneTime") window.close()
                     history.push('/account/dashboard/')
                 }
             } else {

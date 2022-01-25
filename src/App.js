@@ -24,7 +24,6 @@ function App() {
   let [load, setLoad] = useState(false)
 
   function loadFunc () {
-    console.log("yeah")
     loader = !loader
     setLoad(loader)
   }
@@ -62,8 +61,9 @@ function App() {
         <Route path='/account/:page' exact component={ (props) => <Account user={user} 
                                   loginFunc={login} logoutFunc={logout} {...props} load={loadFunc}/>}/>
         <Route path='/login' exact component={() => <Login loginFunc={login} load={loadFunc}/>}/>
+        <Route path='/login/:type' exact component={(props) => <Login loginFunc={login} load={loadFunc} {...props} />}/>
         <Route path='/signup' exact component={() => <Signup load={loadFunc}/>}/>
-        <Route path='/hall/:token' exact component={(props) => <Hall {...props} />}/>
+        <Route path='/hall/:token' exact component={(props) => <Hall {...props} user={user} load={loadFunc} />}/>
       </Switch>
     </Router>
   );

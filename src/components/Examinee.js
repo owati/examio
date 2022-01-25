@@ -9,11 +9,25 @@ function ViewPage(props) {
 
     let joinHall = exam => {history.push("/hall/" + exam.exam["exam code"])}
 
+    let deleteExam = exam => {
+        props.load();
+        let dest = {}
+        apiFetch("DELETE", `exam/${props.token}/${exam.id}`,{},dest)
+        .then(
+            () => {
+                props.load()
+                if(dest.status === 200) {
+                    props.reload()
+                }
+            }
+        )
+    }
+
     function buttonFunc(id) {
         try {
             let div = document.getElementById("exam-details-" + id)
-            if (div.style.height === "0px") div.style.height = "150px";
-            else div.style.height = "0px";
+            if (div.style.height === "0px") {div.style.height = "150px"; div.style.overflowY = "scroll";}
+            else {div.style.height = "0px"; div.style.overflowY = "hidden"}
         } catch {
 
         }
@@ -25,47 +39,52 @@ function ViewPage(props) {
                 if (exam.exam.status === "created") {
                     if (exam.exam.start === null) {
                         return (
-                            <div>
+                            <div className="centralize">
                                 <h2>This exam has no time, specified by the examinerr</h2>
-                                <button className="exam-create-but" onClick={() => joinHall(exam)}>Join Exam</button>
+                                <button className="exam-create-but danger" onClick={() => deleteExam(exam)}> delete </button>
                             </div>
                         )
                     } else {
                         return (
-                            <div>
+                            <div className="centralize">
                                 <h2>time till exam ..</h2>
                                 <CountDownTimer start={exam.exam.start}>
                                     <button className="exam-create-but" onClick={() => joinHall(exam)}>Join Exam</button>
                                 </CountDownTimer>
+                                <button className="exam-create-but danger" onClick={() => deleteExam(exam)}> delete </button>
                             </div>
                         )
                     }
                 } else if (exam.exam.status === "starting") {
                     return (
-                        <div>
+                        <div className="centralize">
                             <h2>The exam will soon be starting..</h2>
                             <button className="exam-create-but" onClick={() => joinHall(exam)}>Join Exam</button>
+                            <button className="exam-create-but danger" onClick={() => deleteExam(exam)}> delete </button>
                         </div>
                     )
                 } else if (exam.exam.status === "during") {
                     return (
-                        <div>
+                        <div className="centralize">
                             <h2>The exam is currently ongoing..</h2>
-                            <button className="exam-create-but">Join Exam</button>
+                            <button className="exam-create-but" onClick={() => joinHall(exam)}>Join Exam</button>
+                            <button className="exam-create-but danger" onClick={() => deleteExam(exam)}> delete </button>
                         </div>
                     )
                 } else {
                     return (
-                        <div>
+                        <div className="centralize"> 
                             <h2>The exam has already been concluded..</h2>
+                            <button className="exam-create-but danger" onClick={() => deleteExam(exam)}> delete </button>
                         </div>
                     )
                 }
             default:
                 return (
-                    <div>
+                    <div className="centralize">
                         <h3>Exam completed</h3>
                         <button className="exam-create-but">View result</button>
+                        <button className="exam-create-but danger" onClick={() => deleteExam(exam)}> delete </button>
                     </div>
                 )
         }
@@ -136,7 +155,7 @@ function ViewPage(props) {
 
             if (content.length === 0) {
                 content = (<div className='exam-none'>
-                    <h5>{page === "all" ? "you have no created exam" : "no exam in this category"}</h5>
+                    <h5>{page === "all" ? "you have no registered exam" : "no exam in this category"}</h5>
                 </div>)
             }
             return (
@@ -226,6 +245,7 @@ function RegisterExam(props) {
                     props.load()
                     if (dest.status === 200) {
                         displayError("Exam registeration successfully..")
+                        props.reload()
                     }
                     else if (dest.status === 403) {
                         let remark = dest.data.status
@@ -283,31 +303,33 @@ function Examinee(props) {
     let [page, setPage] = useState("view")
 
     let [exam, setExam] = useState({ data: null })
-
-
-
-    useEffect(
-        () => {
-            let dest = {};
-            props.load();
-            apiFetch("GET", `exam/${props.token}/all`, {}, dest)
-                .then(
-                    () => {
-                        props.load()
-                        if (dest.status === 200) {
-                            setExam({ ...exam, data: dest.data.exams })
-                        }
+    
+    let getData = () => {
+        let dest = {};
+        props.load();
+        apiFetch("GET", `exam/${props.token}/all`, {}, dest)
+            .then(
+                () => {
+                    props.load()
+                    if (dest.status === 200) {
+                        setExam({ ...exam, data: dest.data.exams })
                     }
-                )
-        }, []
-    )
+                }
+            )
+    }
+
+
+
+    useEffect( () => {
+        getData()
+    }, [])
 
     function selectPage(page) {
         switch (page) {
             case "create":
-                return <RegisterExam load={props.load} token={props.token} />
+                return <RegisterExam load={props.load} token={props.token} reload={getData}/>
             case "view":
-                return <ViewPage exams={exam.data} />
+                return <ViewPage exams={exam.data} token={props.token} load={props.load} reload={getData}/>
             default:
                 return <div>fuck..</div>
 

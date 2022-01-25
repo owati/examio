@@ -1,6 +1,6 @@
 import { useState ,useEffect } from "react";
 
-export const API_URL = "https://examio.herokuapp.com/"  //"http://127.0.0.1:8000/" 
+export const API_URL =  "http://127.0.0.1:8000/" //"https://examio.herokuapp.com/" 
 
 export const apiFetch = async function (method = 'GET', endPoint = null, body = {}, destination) {
 
@@ -79,7 +79,7 @@ export var CountDownTimer = props => {
         },[]
     )
     return !show ? (
-        <h2 id="timer" className="small-marg">00:00:00</h2>
+        <h2 id="timer" className="small-marg" style={props.big ? {fontSize : "50px"} : {}}>00:00:00</h2>
     ) : props.children === undefined ? (
         <h2>00:00:00</h2>
     ) : (
