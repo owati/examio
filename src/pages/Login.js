@@ -39,7 +39,7 @@ function Login(props) {
                 let res_data = response.data;
                 if (res_data.login) {
                     props.loginFunc(res_data);
-                    if(whether === "oneTime") window.close()
+                    if(whether === "oneTime") window.close();
                     history.push('/account/dashboard/')
                 }
             } else {

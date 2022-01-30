@@ -1,8 +1,11 @@
 import { CountDownTimer, apiFetch } from "../functions/function";
+import Cookies from "js-cookie";
 import "../css/hall.css";
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom"
 import Loading from "../components/Loading";
-import examio from "../assets/examio2.png"
+import QuestionPaper from "../components/QuestionPaper";
+import examio from "../assets/examio2.png";
 
 function HallNav() {
     return (
@@ -21,13 +24,27 @@ function HallFoot() {
     )
 }
 
+
+
 function Invigilator(props) {
-    let exam
-    let [examState, setExamState] = useState("start")
+    const history = useHistory();
+    let [examState, setExamState] = useState(null)
 
-    // useEffect(() => {
+    useEffect(   
+        () => {
+            let exams = Cookies.get("current-exam");
 
-    // })
+            if (exams !== undefined) {
+                let info = exams.split('----');
+                if (info[1] === props.code) {
+                    setExamState("during")
+                }
+            } else {
+                setExamState("start")
+            }
+            
+        },[]
+    )
 
     function organizeHall(state) {
         function ChangeUser () {
@@ -44,7 +61,7 @@ function Invigilator(props) {
                         console.log(loginWin)
                         loginWin.onunload = event => {
                             console.log("close")
-                            props.reload()
+                            window.location.reload()
                         }
                     }
                 }
@@ -52,7 +69,25 @@ function Invigilator(props) {
                 </div>
             )
         }
+
+        let changeMode = () => {
+            console.log("esdas")
+            let dest = {}
+            apiFetch("PUT", `exam/${props.token}/${props.code}`,{
+                id : props.code
+            }, dest)
+            .then(
+                () => {
+                    if (dest.status === 200) {
+                        setExamState("during");
+                        console.log("update")
+                        Cookies.set("current-exam", `during----${props.code}`);
+                    }
+                }
+            )
+        }
         if (state === "start") {
+
             if (props.exam.status === "exam has not begun") {
                 if (props.exam.start_time !== null)
                     return (
@@ -60,7 +95,9 @@ function Invigilator(props) {
                             <ChangeUser/>
                             <h2 className="small-marg" style={{ textAlign: "center" }}>Time till exam</h2>
                             <CountDownTimer start={props.exam.start_time} big={true}>
-                                <button className="hall-but shadow-5 grow" onClick={() => { setExamState("during") }}>
+                                <button className="hall-but shadow-5 grow" onClick={() => { 
+                                    changeMode()
+                                }}>
                                     START
                                 </button>
                             </CountDownTimer>
@@ -76,15 +113,39 @@ function Invigilator(props) {
                 return (
                     <div>
                         <ChangeUser/>
-                        <h2 style={{ textAlign: "center" }}>Exam will soon begin</h2>
+                        <h2 className="small-marg" style={{ textAlign: "center" }}>Exam will soon begin</h2>
                         <CountDownTimer start={detail.start_time} big={true}>
-                            <button className="hall-but shadow-5 grow" onClick={() => { setExamState("during") }}>
+                            <button className="hall-but shadow-5 grow" onClick={() => { changeMode() }}>
                                 START
                             </button>
                         </CountDownTimer>
                     </div>
                 )
-            } 
+            } else if (props.exam.status === "the exam is ongoing") {
+                return(
+                <div style={{display:"flex", flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
+                    <ChangeUser/>
+                    <h2 className="small-marg" style={{textAlign : "center"}}>The exam has begun..</h2>
+                    <button className="hall-but shadow-5 grow" onClick={() => {changeMode()}}> START </button>
+                </div>)
+            } else if (props.exam.status === "the exam has ended") {
+                return(
+                <div style={{display:"flex", flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
+                    <h2 className="small-marg"  style={{textAlign : "center"}}>Sorry the exam has already ended</h2>
+                    <button className="hall-but shadow-5 grow" onClick={
+                        () => {
+                            history.push("/account/dashboard")
+                        }
+                    }>Go back</button>
+                </div>
+                )
+            }
+        } else if (state === "during") {
+            let exam = props.exam;
+            if (exam.status === "the exam is ongoing") {
+                return <QuestionPaper exam={exam}/>
+            }
+
         }
     }
     return (
@@ -201,7 +262,7 @@ function Hall(props) {
 
                                     loginWin.onunload = event => {
                                         console.log("close")
-                                        getData()
+                                        window.location.reload()
                                     }
                                 }
                             }>
@@ -227,7 +288,7 @@ function Hall(props) {
                     )
                 } else {
                     return (
-                        <Invigilator exam={exam_data} user={user} reload={getData}/>
+                        <Invigilator exam={exam_data} user={user} reload={getData} code={exam_token} token={props.user.token}/>
                     )
                 }
             }

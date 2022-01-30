@@ -130,20 +130,21 @@ function ExamEdit(props) {
                     return ["End time", <h3 style={{ margin: "10px 0px", color: "rgba(255, 248, 220, 0.474)" }}>this field cannot be changed</h3>]
                 case "start":
                     let dateChange = event => {
-                        let check = self.type === "date"
                         let self = event.target;
+                        let check = self.type === "date"
                         let other = document.getElementById(`${check ? "time-update" : "date-update"}`);
                         let ref = { ...data };
-                        let date = new Date(check ? self.value + other.value : other.value + self.value);
+                        let date = new Date(check ? self.value + " " + other.value : other.value + " " +self.value);
                         if (String(date) === "Invalid Date") {
                             ref[key] = null;
                         } else {
                             ref[key] = date.toJSON();
                         }
+                        setData(ref)
                     }
                     let input = <div style={{ display: "flex" }}>
-                        <input className='create-form-input' style={{ width: "150px", height: "30px" }} type="date" id="date-update" onChange={event => { dateChange(event) }} value={new Date().toLocaleDateString()}></input>
-                        <input className='create-form-input' style={{ width: "150px", height: "30px" }} type="time" id="time-update" onChange={event => { dateChange(event) }} value={new Date().toLocaleTimeString()}></input>
+                        <input className='create-form-input' style={{ width: "150px", height: "30px" }} type="date" id="date-update" onChange={event => { dateChange(event) }} ></input>
+                        <input className='create-form-input' style={{ width: "150px", height: "30px" }} type="time" id="time-update" onChange={event => { dateChange(event) }} ></input>
                     </div>
                     return ["Start time", input]
                 case "duration":
