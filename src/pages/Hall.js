@@ -143,7 +143,7 @@ function Invigilator(props) {
         } else if (state === "during") {
             let exam = props.exam;
             if (exam.status === "the exam is ongoing") {
-                return <QuestionPaper exam={exam}/>
+                return <QuestionPaper exam={exam} token={props.token} code={props.code}/>
             }
 
         }

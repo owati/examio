@@ -1,12 +1,16 @@
-import { getByDisplayValue } from '@testing-library/react';
+import { apiFetch } from '../functions/function';
 import { useEffect, useState } from 'react';
 import examio from '../assets/examio2.png';
+import Cookies from 'js-cookie';
 
 function ExamNav() {
     return (
         <div className='exam-nav'>
             <img src={examio} height="20" width="90"></img>
-            <button className='hall-but shadow-5 grow' style={{ marginTop: "0px" }}>
+            <button className='hall-but shadow-5 grow' style={{ marginTop: "0px" }}
+            onClick={() => {
+
+            }}>
                 Submit
             </button>
             <button>
@@ -85,6 +89,35 @@ function Timer(props) {
 function ExamPaper(props) {
     let questions = props.question;
 
+    function updateAnswer (e) {
+        let arrange = num => {
+            if(num < 10) {
+                return "00" + num
+            } else if( num < 100){
+                return "0" + num
+            } else {
+                return `${num}`
+            }
+        }
+        let ans = e.target;
+        let number = arrange(Number(ans.name.split('-')[1]));
+        let check = false;
+        let answer = Cookies.get("answer").split("----")
+
+        for(let i of answer) {
+            if(i.slice(0,3) === number) {
+                i = number + ans.value;
+                check = true;
+            }
+        }
+
+        if (check) {
+            answer.push(number + ans.value)
+        }
+
+        Cookies.set("answer", answer.join('----'))
+    }
+
     function Question(props) {
         let question = props.question
 
@@ -101,7 +134,7 @@ function ExamPaper(props) {
                 for(let i of quest.options) {
                     comp.push(
                         <div className='exam-option'>
-                        <input className="exam-choice"  type="radio" name={'question-' + quest.number} value={i}></input>
+                        <input className="exam-choice"  type="radio" name={'question-' + quest.number} value={i} onChange={event => {updateAnswer(event)}}></input>
                         <h3> {change(quest.options.indexOf(i))}. {i}</h3>
                         </div>
                     )
@@ -109,7 +142,7 @@ function ExamPaper(props) {
                 return [what, comp]
             } else {
                 return [what,
-                    <textarea name={'question-' + quest.number} className='exam-answer'></textarea>
+                    <textarea name={'question-' + quest.number} className='exam-answer'  onChange={event => {updateAnswer(event)}}></textarea>
                 ]
             }
         }
@@ -133,7 +166,29 @@ function ExamPaper(props) {
 }
 
 function QuestionPaper(props) {
-    var exam = props.exam
+    var exam = props.exam;
+
+    function submitExam() {
+        let dest = {};
+        apiFetch("PUT", `hall/${props.token}/${props.code}`, {
+            answers : Cookies.get("answers")
+        }, dest)
+        .then(
+            () => {
+                if(dest.status === 200) {
+                    // the post submission process
+                }
+            }
+        )
+    }
+
+    useEffect(
+        () => {
+            if (Cookies.get("answers") === undefined) {
+                Cookies.set("answers", "")
+            }
+        },[]
+    )
     return (
         <div className="exam-page">
             <ExamNav />

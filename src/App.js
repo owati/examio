@@ -30,8 +30,8 @@ function App() {
 
   let login = data => {                    // logs the user and save the data as a cookie
     if(data.name !== undefined && data.token !== undefined) {
-      Cookie.set("name", data.name);
-      Cookie.set("token", data.token)
+      Cookie.set("name", data.name, {expires : 7});
+      Cookie.set("token", data.token, {expires : 7})
 
       setUser({
         name: data.name,
