@@ -37,7 +37,7 @@ function Invigilator(props) {
             if (exams !== undefined) {
                 let info = exams.split('----');
                 if (info[1] === props.code) {
-                    setExamState("during")
+                    setExamState(info[0])
                 }
             } else {
                 setExamState("start")
@@ -71,17 +71,18 @@ function Invigilator(props) {
         }
 
         let changeMode = () => {
-            console.log("esdas")
             let dest = {}
             apiFetch("PUT", `exam/${props.token}/${props.code}`,{
                 id : props.code
             }, dest)
             .then(
                 () => {
+                    console.log("yippee", dest, dest.status === 200)
                     if (dest.status === 200) {
-                        setExamState("during");
                         console.log("update")
                         Cookies.set("current-exam", `during----${props.code}`);
+                        setExamState("during");
+                        props.reload()
                     }
                 }
             )
@@ -142,10 +143,33 @@ function Invigilator(props) {
             }
         } else if (state === "during") {
             let exam = props.exam;
+            console.log(exam)
             if (exam.status === "the exam is ongoing") {
-                return <QuestionPaper exam={exam} token={props.token} code={props.code}/>
+                return <QuestionPaper exam={exam} token={props.token} code={props.code} load={props.load}/>
+            } else {
+                return (
+                    <div style={{display:"flex", flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
+                    <h2 className="small-marg"  style={{textAlign : "center"}}>Sorry the exam has already ended</h2>
+                    <button className="hall-but shadow-5 grow" onClick={
+                        () => {
+                            history.push("/account/dashboard")
+                        }
+                    }>Go back</button>
+                </div>
+                )
             }
 
+        } else {
+            return (
+                <div style={{display:"flex", flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
+                <h2 className="small-marg"  style={{textAlign : "center"}}>Sorry the exam has already ended</h2>
+                <button className="hall-but shadow-5 grow" onClick={
+                    () => {
+                        history.push("/account/dashboard")
+                    }
+                }>Go back</button>
+            </div>
+            )
         }
     }
     return (
@@ -288,7 +312,7 @@ function Hall(props) {
                     )
                 } else {
                     return (
-                        <Invigilator exam={exam_data} user={user} reload={getData} code={exam_token} token={props.user.token}/>
+                        <Invigilator exam={exam_data} user={user} load={loadFunc} reload={getData} code={exam_token} token={props.user.token}/>
                     )
                 }
             }

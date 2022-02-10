@@ -1045,7 +1045,7 @@ function CreateExam(props) {
                     number: formData.get("questions"),
                     num_of_students: formData.get("students"),
                     start: formData.get("start-date") === null ? null : new Date(formData.get("start-date") + " " + formData.get("start-time")).toJSON(),
-                    verification: formData.get("veri-check") === "on",
+                    verification: formData.get("veri-check") === true,
                     specific: formData.get("specific") === "" ? null : formData.get("specific"),
                     personal: formData.get("personal"),
                     duration: formData.get("duration") === null ? null : formData.get("duration") * 60,

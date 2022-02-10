@@ -152,3 +152,53 @@
     margin-right: 10px;
     margin-top: 4px;
 }
+
+.quest-butt {
+    padding: 5px;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+}
+
+#settings-div {
+    position: fixed;
+    top : 50px;
+    right: 0px;
+    z-index: 100;
+    background-color: green;
+    height: 0px;
+    overflow-y: hidden;
+    transition: 0.8s ease all;
+}
+
+.sett {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.sett-but {
+    height: 30px;
+    margin-left: 5px;
+}
+
+.quest-change-div {
+    position: fixed;
+    bottom: 50px;
+    display: flex;
+    width: calc(100% - 20px);
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quest-change-butt-div {
+    overflow-x: scroll;
+}
+
+.no-top {
+    margin-top: 0px;
+}
+
+
+.answered {
+    background-color: green;
+}
