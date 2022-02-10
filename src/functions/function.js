@@ -1,6 +1,6 @@
 import { useState ,useEffect } from "react";
 
-export const API_URL =  "http://127.0.0.1:8000/"  // "https://examio.herokuapp.com/"   
+export const API_URL =   "https://examio.herokuapp.com/"  //"http://127.0.0.1:8000/"   
 
 export const apiFetch = async function (method = 'GET', endPoint = null, body = {}, destination) {
 
