@@ -294,9 +294,9 @@ function QuestionPaper(props) {
 
     useEffect(
         () => {
-
             if (Cookies.get("answers") === undefined) {
                 Cookies.set("answers", "")
+                window.location.reload()
             }
         }, []
     )
