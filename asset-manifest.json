@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/examio/static/css/main.eddda26c.chunk.css",
-    "main.js": "/examio/static/js/main.4bd174a4.chunk.js",
-    "main.js.map": "/examio/static/js/main.4bd174a4.chunk.js.map",
+    "main.js": "/examio/static/js/main.15e7c7ac.chunk.js",
+    "main.js.map": "/examio/static/js/main.15e7c7ac.chunk.js.map",
     "runtime-main.js": "/examio/static/js/runtime-main.79734e8e.js",
     "runtime-main.js.map": "/examio/static/js/runtime-main.79734e8e.js.map",
     "static/css/2.44dacfda.chunk.css": "/examio/static/css/2.44dacfda.chunk.css",
@@ -24,6 +24,6 @@
     "static/css/2.44dacfda.chunk.css",
     "static/js/2.dcde1990.chunk.js",
     "static/css/main.eddda26c.chunk.css",
-    "static/js/main.4bd174a4.chunk.js"
+    "static/js/main.15e7c7ac.chunk.js"
   ]
 }
