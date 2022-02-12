@@ -30,7 +30,7 @@ function Invigilator(props) {
     const history = useHistory();
     let [examState, setExamState] = useState(null)
 
-    useEffect(   
+    useEffect(
         () => {
             let exams = Cookies.get("current-exam");
 
@@ -42,50 +42,50 @@ function Invigilator(props) {
             } else {
                 setExamState("start")
             }
-            
-        },[]
+
+        }, []
     )
 
     function organizeHall(state) {
-        function ChangeUser () {
+        function ChangeUser() {
             return (
                 <div>
-                <h3 className="small-marg" style={{textAlign : "center"}}> switch account from "{props.user.info.name}" ? </h3>
-                <h3 className="small-marg" style={{marginBottom : "30px"}}><span className="hall-link grow shadow-5"
-                onClick={
-                    () => {
-                        let path = process.env.PUBLIC_URL + "/#/login/oneTime";
-                        let top = (window.outerHeight / 2) - 250
-                        let left = (window.outerWidth / 2) - 250
-                        let loginWin = window.open(path, "Login to account", `height=500,width=500,top=${top},left=${left},location=no`);
-                        console.log(loginWin)
-                        loginWin.onunload = event => {
-                            console.log("close")
-                            window.location.reload()
+                    <h3 className="small-marg" style={{ textAlign: "center" }}> switch account from "{props.user.info.name}" ? </h3>
+                    <h3 className="small-marg" style={{ marginBottom: "30px" }}><span className="hall-link grow shadow-5"
+                        onClick={
+                            () => {
+                                let path = process.env.PUBLIC_URL + "/#/login/oneTime";
+                                let top = (window.outerHeight / 2) - 250
+                                let left = (window.outerWidth / 2) - 250
+                                let loginWin = window.open(path, "Login to account", `height=500,width=500,top=${top},left=${left},location=no`);
+                                console.log(loginWin)
+                                loginWin.onunload = event => {
+                                    console.log("close")
+                                    window.location.reload()
+                                }
+                            }
                         }
-                    }
-                }
-                >Click here</span></h3>
+                    >Click here</span></h3>
                 </div>
             )
         }
 
         let changeMode = () => {
             let dest = {}
-            apiFetch("PUT", `exam/${props.token}/${props.code}`,{
-                id : props.code
+            apiFetch("PUT", `exam/${props.token}/${props.code}`, {
+                id: props.code
             }, dest)
-            .then(
-                () => {
-                    console.log("yippee", dest, dest.status === 200)
-                    if (dest.status === 200) {
-                        console.log("update")
-                        Cookies.set("current-exam", `during----${props.code}`);
-                        setExamState("during");
-                        props.reload()
+                .then(
+                    () => {
+                        console.log("yippee", dest, dest.status === 200)
+                        if (dest.status === 200) {
+                            console.log("update")
+                            Cookies.set("current-exam", `during----${props.code}`);
+                            setExamState("during");
+                            props.reload()
+                        }
                     }
-                }
-            )
+                )
         }
         if (state === "start") {
 
@@ -93,10 +93,10 @@ function Invigilator(props) {
                 if (props.exam.start_time !== null)
                     return (
                         <div>
-                            <ChangeUser/>
+                            <ChangeUser />
                             <h2 className="small-marg" style={{ textAlign: "center" }}>Time till exam</h2>
                             <CountDownTimer start={props.exam.start_time} big={true}>
-                                <button className="hall-but shadow-5 grow" onClick={() => { 
+                                <button className="hall-but shadow-5 grow" onClick={() => {
                                     changeMode()
                                 }}>
                                     START
@@ -113,7 +113,7 @@ function Invigilator(props) {
                 let detail = props.exam.details
                 return (
                     <div>
-                        <ChangeUser/>
+                        <ChangeUser />
                         <h2 className="small-marg" style={{ textAlign: "center" }}>Exam will soon begin</h2>
                         <CountDownTimer start={detail.start_time} big={true}>
                             <button className="hall-but shadow-5 grow" onClick={() => { changeMode() }}>
@@ -123,52 +123,52 @@ function Invigilator(props) {
                     </div>
                 )
             } else if (props.exam.status === "the exam is ongoing") {
-                return(
-                <div style={{display:"flex", flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
-                    <ChangeUser/>
-                    <h2 className="small-marg" style={{textAlign : "center"}}>The exam has begun..</h2>
-                    <button className="hall-but shadow-5 grow" onClick={() => {changeMode()}}> START </button>
-                </div>)
+                return (
+                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                        <ChangeUser />
+                        <h2 className="small-marg" style={{ textAlign: "center" }}>The exam has begun..</h2>
+                        <button className="hall-but shadow-5 grow" onClick={() => { changeMode() }}> START </button>
+                    </div>)
             } else if (props.exam.status === "the exam has ended") {
-                return(
-                <div style={{display:"flex", flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
-                    <h2 className="small-marg"  style={{textAlign : "center"}}>Sorry the exam has already ended</h2>
-                    <button className="hall-but shadow-5 grow" onClick={
-                        () => {
-                            history.push("/account/dashboard")
-                        }
-                    }>Go back</button>
-                </div>
+                return (
+                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                        <h2 className="small-marg" style={{ textAlign: "center" }}>Sorry the exam has already ended</h2>
+                        <button className="hall-but shadow-5 grow" onClick={
+                            () => {
+                                history.push("/account/dashboard")
+                            }
+                        }>Go back</button>
+                    </div>
                 )
             }
         } else if (state === "during") {
             let exam = props.exam;
             console.log(exam)
             if (exam.status === "the exam is ongoing") {
-                return <QuestionPaper exam={exam} token={props.token} code={props.code} load={props.load}/>
+                return <QuestionPaper exam={exam} token={props.token} code={props.code} load={props.load} />
             } else {
                 return (
-                    <div style={{display:"flex", flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
-                    <h2 className="small-marg"  style={{textAlign : "center"}}>Sorry the exam has already ended</h2>
+                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                        <h2 className="small-marg" style={{ textAlign: "center" }}>Sorry the exam has already ended</h2>
+                        <button className="hall-but shadow-5 grow" onClick={
+                            () => {
+                                history.push("/account/dashboard")
+                            }
+                        }>Go back</button>
+                    </div>
+                )
+            }
+
+        } else {
+            return (
+                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                    <h2 className="small-marg" style={{ textAlign: "center" }}>You have completed this exam..</h2>
                     <button className="hall-but shadow-5 grow" onClick={
                         () => {
                             history.push("/account/dashboard")
                         }
                     }>Go back</button>
                 </div>
-                )
-            }
-
-        } else {
-            return (
-                <div style={{display:"flex", flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
-                <h2 className="small-marg"  style={{textAlign : "center"}}>Sorry the exam has already ended</h2>
-                <button className="hall-but shadow-5 grow" onClick={
-                    () => {
-                        history.push("/account/dashboard")
-                    }
-                }>Go back</button>
-            </div>
             )
         }
     }
@@ -296,7 +296,7 @@ function Hall(props) {
                     )
                 } else {
                     return (
-                        <Invigilator exam={exam_data} reload={getData}/>
+                        <Invigilator exam={exam_data} reload={getData} />
                     )
                 }
             } else {
@@ -312,7 +312,7 @@ function Hall(props) {
                     )
                 } else {
                     return (
-                        <Invigilator exam={exam_data} user={user} load={loadFunc} reload={getData} code={exam_token} token={props.user.token}/>
+                        <Invigilator exam={exam_data} user={user} load={loadFunc} reload={getData} code={exam_token} token={props.user.token} />
                     )
                 }
             }

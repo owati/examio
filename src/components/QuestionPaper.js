@@ -9,6 +9,7 @@ function ExamNav({ submit }) {
             <img src={examio} height="20" width="90"></img>
             <button className='hall-but shadow-5 grow' style={{ marginTop: "0px" }}
                 onClick={() => {
+                    prompt("Are you sure to tou want to  submit ?")
                     submit();
                 }}>
                 Submit
@@ -138,7 +139,7 @@ function ExamPaper(props) {
         </button>
     }
 
-    function updateAnswer(e, quest) {
+    function updateAnswer(e) {
         console.log("change")
         let ans = e.target;
         let number = arrange(Number(ans.name.split('-')[1]));
@@ -294,9 +295,10 @@ function QuestionPaper(props) {
 
     useEffect(
         () => {
+    
             if (Cookies.get("answers") === undefined) {
                 Cookies.set("answers", "")
-                window.location.reload()
+                window.location.reload();
             }
         }, []
     )

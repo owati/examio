@@ -1,8 +1,75 @@
 import { useState, useEffect } from 'react';
-import { apiFetch, API_URL, CountDownTimer } from '../functions/function';
+import { apiFetch, CountDownTimer } from '../functions/function';
 import back from '../assets/backarr.png';
 
 const home_url = "examio"
+
+
+function ExamResult({ exam, token, load }) {
+
+    let [responses, setResponses] = useState({results : null})
+
+    let getResult = () => {
+        load();
+        let dest = {};
+        apiFetch("GET", `result/${token}/${exam.id}`, {}, dest)
+            .then(
+                () => {
+                    load();
+                    if (dest.status === 200) {
+                        setResponses(Object.assign({}, responses, {results : dest.data.results}));
+                    }
+                }
+            )
+    }
+
+
+    useEffect(
+        () => {
+            if (exam.status === "end") { // when the exam has already been ended
+                getResult();
+            }
+
+        }, []
+    )
+
+    let organiseResult = responses => {
+        if (responses === null) {
+            return (
+                <div>
+                    <h1> the exam is still ongoing...</h1>
+                    <button className='exam-create-but' onClick={() => {getResult()}}>get result anyway </button>
+                </div>
+            )
+        } else {
+            return responses.map(
+                x => (
+                    <button className='exam-list-button grow shadow-5' >
+                        <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+                            <h4 style={{ margin: "0px" }}>{x.user} </h4> <h4 style={{ margin: "0px" }}></h4>
+                        </div>
+                        <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
+                            <h4 style={{ margin: "10px", color: "rgba(255, 248, 220, 0.474)" }}>score : {x.mark}</h4>
+                        </div>
+                    </button>
+                )
+            )
+        }
+    }
+    return (
+        <div className='exam-create-div'>
+            <div style={{ display: "flex", position: "sticky" }}>
+                <h2 className='back-button grow' onClick={
+                    () => {
+                        document.getElementsByClassName("exam-action-page")[0].style.display = "none";
+                    }
+                }>&#8630; </h2>
+                <h2 id="create-header" style={{ margin: "5px" }}>View the exam results..</h2>
+            </div>
+            {organiseResult(responses.results)}
+        </div>
+    )
+}
 
 function ExamLogs(props) {
     let [hall, setHall] = useState({})
@@ -20,7 +87,7 @@ function ExamLogs(props) {
                     return [
                         <h2 className='small-marg'>Start time: </h2>,
                         <h3 className='small-marg'>{time.toLocaleDateString()} {time.toLocaleTimeString()} </h3>,
-                        <h3 className='small-marg' style={{marginTop : "30px"}}> exam will begin in..</h3>,
+                        <h3 className='small-marg' style={{ marginTop: "30px" }}> exam will begin in..</h3>,
                         <CountDownTimer start={props.exam.start}>
 
                         </CountDownTimer>
@@ -73,9 +140,9 @@ function ExamLogs(props) {
                             document.getElementsByClassName("exam-action-page")[0].style.display = "none";
                         }
                     }>&#8630; </h2>
-                     <h2 className='small-marg' style={{ textAlign: "left" }}>Exam logs.</h2>
+                    <h2 className='small-marg' style={{ textAlign: "left" }}>Exam logs.</h2>
                 </div>
-               
+
                 <div className='log-div'>
                     {generateLogs(props.exam.status)}
                 </div>
@@ -134,7 +201,7 @@ function ExamEdit(props) {
                         let check = self.type === "date"
                         let other = document.getElementById(`${check ? "time-update" : "date-update"}`);
                         let ref = { ...data };
-                        let date = new Date(check ? self.value + " " + other.value : other.value + " " +self.value);
+                        let date = new Date(check ? self.value + " " + other.value : other.value + " " + self.value);
                         if (String(date) === "Invalid Date") {
                             ref[key] = null;
                         } else {
@@ -757,6 +824,11 @@ function ExamDetail(props) {
                         <ExamLogs exam={examData.data.exam.exam} token={props.token} load={props.load} />
                     )
 
+                case "result":
+                    return (
+                        <ExamResult exam={examData.data.exam.exam} token={props.token} load={props.load} />
+                    )
+
             }
         }
     }
@@ -847,6 +919,17 @@ function ExamDetail(props) {
                         <div>
                             <h3 className={`${page === "logs" ? "active" : ""}`} style={{ margin: "0px", textAlign: "start" }}>Logs</h3>
                             <h5 style={{ margin: "0px", marginTop: "10px" }}> view exam status as the exam is ongoing </h5>
+                        </div>
+
+                    </button>
+                    <button className={`exam-action-butt grow`}
+                        onClick={() => {
+                            setPage("result")
+                            document.getElementsByClassName("exam-action-page")[0].style.display = "flex";
+                        }}>
+                        <div>
+                            <h3 className={`${page === "result" ? "active" : ""}`} style={{ margin: "0px", textAlign: "start" }}>Result</h3>
+                            <h5 style={{ margin: "0px", marginTop: "10px" }}> organise the exam result ... </h5>
                         </div>
 
                     </button>
@@ -1081,7 +1164,7 @@ function CreateExam(props) {
     return (
         <div className='exam-create-div'>
             <div style={{ display: "flex", position: "sticky" }}>
-                <h2 className='back-button grow' style={{marginTop : "8px"}}  onClick={
+                <h2 className='back-button grow' style={{ marginTop: "8px" }} onClick={
                     () => {
                         document.getElementsByClassName("exam-action-page")[0].style.display = "none";
                     }
