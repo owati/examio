@@ -7,7 +7,12 @@ const home_url = "examio"
 
 function ExamResult({ exam, token, load }) {
 
-    let [responses, setResponses] = useState({results : null})
+    let [responses, setResponses] = useState(
+        {
+            results: null,
+            personal: null
+        }
+    )
 
     let getResult = () => {
         load();
@@ -17,10 +22,66 @@ function ExamResult({ exam, token, load }) {
                 () => {
                     load();
                     if (dest.status === 200) {
-                        setResponses(Object.assign({}, responses, {results : dest.data.results}));
+                        setResponses(Object.assign({}, responses, { results: dest.data.results }));
                     }
                 }
             )
+    }
+
+    let capitalize = (str) => {
+        console.log(str)
+        let str_array = str.split("");
+        return str_array.map(
+            x => {
+                if (str_array.indexOf(x) === 0) return x.toUpperCase();
+                else return x;
+            }
+        ).join("");
+    }
+
+    function ScoreBoard({ data }) {
+
+        return (
+            <div className='score-board'>
+                <h1 className='really-big'>{data.mark}</h1>
+                <h1 className='really-big over-div'> {data.exam.total}</h1>
+            </div>
+        )
+    }
+    
+    function QuestionResult({ quest, ans }) { 
+        
+        useEffect(
+            () => {
+                for(let i of ans) {
+                    
+                }
+            }
+        )
+        return (
+            <div className='question-result'>
+                <h4 className='small-marg' style={{textAlign : "left"}}>{quest.number}. {quest.question}</h4>
+            </div>
+        )
+    }
+
+    function PersonalResult({ data }) {
+        return (
+            <div>
+                <div className='personal-div'>
+                    <ScoreBoard data={data} />
+                </div>
+
+                <h2>The answers of {capitalize(data.user.split(" ")[0])}... </h2>
+                <div>
+                    {
+                        data.questions.map(
+                            x => <QuestionResult quest={x} ans={data.answers}/>
+                        )
+                    }
+                </div>
+            </div>
+        )
     }
 
 
@@ -33,27 +94,37 @@ function ExamResult({ exam, token, load }) {
         }, []
     )
 
-    let organiseResult = responses => {
-        if (responses === null) {
+    let organiseResult = ({ results, personal }) => {
+        if (results === null) {
             return (
                 <div>
                     <h1> the exam is still ongoing...</h1>
-                    <button className='exam-create-but' onClick={() => {getResult()}}>get result anyway </button>
+                    <button className='exam-create-but' onClick={() => { getResult() }}>get result anyway </button>
                 </div>
             )
         } else {
-            return responses.map(
-                x => (
-                    <button className='exam-list-button grow shadow-5' >
-                        <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
-                            <h4 style={{ margin: "0px" }}>{x.user} </h4> <h4 style={{ margin: "0px" }}></h4>
-                        </div>
-                        <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
-                            <h4 style={{ margin: "10px", color: "rgba(255, 248, 220, 0.474)" }}>score : {x.mark}</h4>
-                        </div>
-                    </button>
+            if (personal === null) {
+                return results.map(
+                    x => (
+                        <button className='exam-list-button grow shadow-5' onClick={
+                            () => {
+                                setResponses({ ...responses, personal: x })
+                            }
+                        }>
+                            <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+                                <h4 style={{ margin: "0px" }}>{x.user} </h4> <h4 style={{ margin: "0px" }}></h4>
+                            </div>
+                            <div style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}>
+                                <h4 style={{ margin: "10px", color: "rgba(255, 248, 220, 0.474)" }}>score : {x.mark}</h4>
+                            </div>
+                        </button>
+                    )
                 )
-            )
+            }
+            else {
+                return <PersonalResult data={responses.personal} />
+
+            }
         }
     }
     return (
@@ -61,12 +132,15 @@ function ExamResult({ exam, token, load }) {
             <div style={{ display: "flex", position: "sticky" }}>
                 <h2 className='back-button grow' onClick={
                     () => {
-                        document.getElementsByClassName("exam-action-page")[0].style.display = "none";
+                        if (responses.personal === null) document.getElementsByClassName("exam-action-page")[0].style.display = "none";
+                        else {
+                            setResponses({ ...responses, personal: null })
+                        }
                     }
                 }>&#8630; </h2>
-                <h2 id="create-header" style={{ margin: "5px" }}>View the exam results..</h2>
+                <h2 id="create-header" style={{ margin: "5px" }}>View {responses.personal === null ? "the exam" : capitalize(responses.personal.user.split(" ")[0]) + "'s"} results..</h2>
             </div>
-            {organiseResult(responses.results)}
+            {organiseResult(responses)}
         </div>
     )
 }
